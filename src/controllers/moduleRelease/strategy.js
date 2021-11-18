@@ -1,0 +1,30 @@
+// const jwtHelper = require("../helpers/jwt.helper");
+// const debug = console.log.bind(console);
+// const crypt = require("../crypt/crypt");
+require('dotenv').config()
+// const jwt = require("jsonwebtoken");
+var sleep = require('sleep');
+const db = require("../../db/db");
+/**
+ * controller login
+ * @param {*} req 
+ * @param {*} res 
+ */
+let strategy = async (req, res) => {
+	try {
+		var query = `SELECT * FROM prm."Strategy" where "ReleaseType" = '${req.query.type}';`
+		db.query(query, (err, resp) => {
+			if (err) {
+				return res.status(404).json({ message: err.message });
+			} else {
+				return res.status(200).json( resp.rows );
+			}
+		})
+	} catch (error) {
+		return res.status(404).json({ message: error.message });
+	}
+
+}
+module.exports = {
+	strategy: strategy,
+}
