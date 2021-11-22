@@ -22,6 +22,7 @@ const updateHiddenItem = require("../controllers/updateHiddenItem");
 //master data
 const getAllMasterData = require("../controllers/masterdata/getAllMasterData");
 const postMasterData = require("../controllers/masterdata/postMasterData");
+const postMaterial = require("../controllers/masterdata/postMaterial");
 
 const getCompanyCode = require("../controllers/masterdata/getCompanyCode");
 const postCompanyCode = require("../controllers/masterdata/postCompanyCode");
@@ -62,6 +63,9 @@ const uploadFiles = require("../controllers/PR/files/uploadFiles");
 const getListFile = require("../controllers/PR/files/getListFile");
 //get getNotification
 const getNotification = require("../controllers/notification/getNotification");
+//updateStatus notification
+const updateStatus = require("../controllers/notification/updateStatus");
+
 //get listRelease
 const getListRelease = require("../controllers/moduleRelease/getListRelease");
 //post postStrategy
@@ -72,6 +76,7 @@ const getUser = require("../controllers/userManage/getAllUser");
 const getRole = require("../controllers/role/getRole");
 //post role
 const postRole = require("../controllers/role/postRole");
+
 
 /**
  * Init all APIs on your application
@@ -115,6 +120,8 @@ let initAPIs = (app) => {
   //master data
   router.get("/getMasterData", getAllMasterData.getAllMasterData);
   router.post("/postMasterData", postMasterData.postMasterData);
+  router.post("/postMaterial", postMaterial.postMaterial);
+  
 
   router.get("/companyCode", getCompanyCode.companyCode);
   router.post("/CompanyCode", postCompanyCode.postCompanyCode);
@@ -144,6 +151,8 @@ let initAPIs = (app) => {
   router.get("/downloadFile" ,uploadFiles.downloadFile);
   //dm đây là  get getNotification
   router.get("/getNotification" ,getNotification.getNotification);
+  //dm đây là  update status code notification
+  router.post("/updateStatus" ,updateStatus.updateStatus);
   //dm đây là get list Release
   router.get("/getListRelease" ,getListRelease.getListRelease);
   //dm đây là post postStrategy
