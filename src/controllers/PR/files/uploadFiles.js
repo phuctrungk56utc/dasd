@@ -25,8 +25,9 @@ var upload = multer({
 })
 let uploadFiles = async (req, res) => {
     try {
-		const checkFileExist = await db.query(`select filename from prm."FileUpload" where "PR_NO"=${req.headers.pr_no}`);
+		// const checkFileExist = await db.query(`select filename from prm."FileUpload" where "PR_NO"=${req.headers.pr_no}`);
 		if(req.headers.pr_no !== '0' && req.headers.pr_no !== 0 && req.headers.pr_no !== ''){
+			if(req.files.length > 0){
 			var stringValue = `INSERT INTO prm."FileUpload" ("PR_NO","filename","size", "type","path","relativeSize","createBy","changeBy") VALUES`;
 			const leng = req.files.length;
 			for(let index in req.files){
@@ -42,6 +43,11 @@ let uploadFiles = async (req, res) => {
 			await db.query(`${stringValue}`);
 			// console.log('object')
 			return res.status(200).json({ message: 'Success' });
+		}else{
+			await db.query(`DELETE FROM prm."FileUpload"
+			WHERE "PR_NO"=${req.headers.pr_no};`);
+			return res.status(200).json({ message: 'Success' });
+		}
 			
 		}else{
 			return res.status(403).json({ message: 'Tạo PR trước' });

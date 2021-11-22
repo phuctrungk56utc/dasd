@@ -53,12 +53,12 @@ let saveAndSubmit = async (req, res) => {
             "HWAERS" = '${hwaers}',
             "changeAt"=now(),
             "changeBy"='${userId}'
-            WHERE "PR_NO"=${req.body.params.dataPR.HEADER.PR_NO};`
+            WHERE "PR_NO"=${req.body.params.dataPR.HEADER.PR_NO} RETURNING "changeAt";`
 
             const update = await db.query(query);
             if (update.rowCount > 0) {
-                await db.query(`DELETE FROM prm."PrItem"
-                WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
+                // await db.query(`DELETE FROM prm."PrItem"
+                // WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
 
                 //call api sap
                 var dataCallSap = req.body.params.dataPR;
@@ -74,15 +74,24 @@ let saveAndSubmit = async (req, res) => {
                     cd.push(ob);
                 }
                 dataCallSap.COND_RELEASE = cd;
-                let api = await db.query(`select api from prm."API"`);
-                if (api.rows.length > 0) {
+                // let api = await db.query(`select api from prm."API"`);
+                // if (api.rows.length > 0) {
                     var data = await apiSap.apiSap(process.env.CIBER_PRM_API_SAP, dataCallSap, 'POST');
                     if (data.data.length > 0) {
-
-                        if (data.data[0].HEADER.TYPE === 'S') {
+                        var checkError = false;
+                        for (let index in data.data) {
+                            if (data.data[index].HEADER.TYPE === 'E') {
+                                checkError = true;
+                                break;
+                            }
+                        }
+                        if (!checkError) {
+                            
                             var rs = await updateTable.updateTablePrAndRelease(data.data[0], req,dataCallSap,userId);
                             // console.log(rs);
                             if (rs) {
+                                await db.query(`DELETE FROM prm."PrItem"
+                                WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
                                 // dataItem = rs.ITEM[0];
                                 var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
                             "MENGE","MEINS","PREIS","WEARS","PEINH","GSWRT","LOCAL_AMOUNT","EBELN","EBELP","LOEKZ","EKORG","EKGRP","WEPOS","WEUNB",
@@ -107,6 +116,9 @@ let saveAndSubmit = async (req, res) => {
                                 return res.status(200).json(data.data);
                             }
                             // return res.status(200).json(data.data);
+                        }else{
+                            req.body.params.dataPR.HEADER.changeAt = update.rows[0].changeAt;
+                            return res.status(404).json({data:data.data,dataHeader:req.body.params.dataPR.HEADER});
                         }
                     } else {
                         var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
@@ -131,9 +143,9 @@ let saveAndSubmit = async (req, res) => {
                         await db.query(`${stringValue};`);
                         return res.status(200).json({ message: 'Tạo thất bại!' });
                     }
-                } else {
-                    return res.status(404).json({ message: 'Không tìm thấy đường dẫn!' });
-                }
+                // } else {
+                //     return res.status(404).json({ message: 'Không tìm thấy đường dẫn!' });
+                // }
                 // return res.status(200).json({ message: 'success' });
                 // console.log('object');
             } else {
@@ -166,7 +178,7 @@ let saveAndSubmit = async (req, res) => {
                 '${hwaers}',
                 '${req.body.params.dataPR.HEADER.DESCRIPTION}',
                 '${userId}','${userId}')
-                RETURNING "PR_NO";`
+                RETURNING "PR_NO","changeAt";`
 
             const id = await db.query(query);
 
@@ -207,14 +219,15 @@ let saveAndSubmit = async (req, res) => {
             }
             dataCallSap.COND_RELEASE = cd;
             dataCallSap.HEADER.PR_NO = id.rows[0].PR_NO;
-            let api = await db.query(`select api from prm."API"`);
-            if (api.rows.length > 0) {
+            // let api = await db.query(`select api from prm."API"`);
+            // if (api.rows.length > 0) {
                 var data = await apiSap.apiSap(process.env.CIBER_PRM_API_SAP, dataCallSap, 'POST');
                 if (data.data.length > 0) {
                     var checkError = false;
                     for (let index in data.data) {
                         if (data.data[index].HEADER.TYPE === 'E') {
                             checkError = true;
+                            break;
                         }
                     }
                     if (!checkError) {
@@ -222,6 +235,8 @@ let saveAndSubmit = async (req, res) => {
                         var rs = await updateTable.updateTablePrAndRelease(data.data[0], req,dataCallSap,userId);
                         // console.log(rs);
                         if (rs) {
+                            await db.query(`DELETE FROM prm."PrItem"
+                            WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
                             // dataItem = rs.ITEM[0];
                             var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
                         "MENGE","MEINS","PREIS","WEARS","PEINH","GSWRT","LOCAL_AMOUNT","EBELN","EBELP","LOEKZ","EKORG","EKGRP","WEPOS","WEUNB",
@@ -246,8 +261,31 @@ let saveAndSubmit = async (req, res) => {
                             // data.data.HEADER.PR_TYPE = dataCallSap.HEADER.PR_TYPE;
                             return res.status(200).json(data.data);
                         }
+                    }else{
+                        var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
+                        "MENGE","MEINS","PREIS","WEARS","PEINH","GSWRT","LOCAL_AMOUNT","EBELN","EBELP","LOEKZ","EKORG","EKGRP","WEPOS","WEUNB",
+                        "BLCKD","REPOS","BLCKT","SAKTO","KOSTL","PRCTR","ANLN1","ANLN2","AUFNR","GSBER","KOKRS","GEBER","FIPOS","FKBER","FISTL","INFNR") VALUES`;
+                            const leng = dataItem.length
+                            for (let i in dataItem) {
+                                dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
+                                var stringValueChiden = '';
+                                stringValueChiden = `('${dataItem[i].PR_NO}','${dataItem[i].PR_ITEM}','${dataItem[i].KNTTP}','${dataItem[i].PSTYP}','${dataItem[i].MATNR}','${dataItem[i].MATKL}','${dataItem[i].TXZ01}'
+                                ,'${dataItem[i].WERKS}','${dataItem[i].LGORT}','${dataItem[i].LFDAT}','${dataItem[i].LIFNR}','${dataItem[i].MENGE}','${dataItem[i].MEINS}','${dataItem[i].PREIS}'
+                                ,'${dataItem[i].WEARS}','${dataItem[i].PEINH}','${dataItem[i].GSWRT}','${dataItem[i].LOCAL_AMOUNT}','${dataItem[i].EBELN}','${dataItem[i].EBELP}','${dataItem[i].LOEKZ}'
+                                ,'${dataItem[i].EKORG}','${dataItem[i].EKGRP}','${dataItem[i].WEPOS}','${dataItem[i].WEUNB}','${dataItem[i].BLCKD}','${dataItem[i].REPOS}','${dataItem[i].BLCKT}'
+                                ,'${dataItem[i].SAKTO}','${dataItem[i].KOSTL}','${dataItem[i].PRCTR}','${dataItem[i].ANLN1}','${dataItem[i].ANLN2}','${dataItem[i].AUFNR}','${dataItem[i].GSBER}'
+                                ,'${dataItem[i].KOKRS}','${dataItem[i].GEBER}','${dataItem[i].FIPOS}','${dataItem[i].FKBER}','${dataItem[i].FISTL}','${dataItem[i].INFNR}')`;
+                                if (leng > Number(i) + 1) {
+                                    stringValueChiden += ','
+                                }
+        
+                                stringValue += stringValueChiden;
+                            }
+                        await db.query(`${stringValue};`);
+                        return res.status(404).json({data:data.data,dataHeader:{PR_NO:id.rows[0].PR_NO,ACTION_CODE:1,createBy:userId,changeAt:id.rows[0].changeAt,STATUS:1,
+                            PR_TYPE:req.body.params.dataPR.HEADER.PR_TYPE,BUKRS:req.body.params.dataPR.HEADER.BUKRS,DESCRIPTION:req.body.params.dataPR.HEADER.DESCRIPTION}});
                     }
-                    return res.status(200).json(data.data);
+                    
                 } else {
                     var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
                 "MENGE","MEINS","PREIS","WEARS","PEINH","GSWRT","LOCAL_AMOUNT","EBELN","EBELP","LOEKZ","EKORG","EKGRP","WEPOS","WEUNB",
@@ -271,7 +309,7 @@ let saveAndSubmit = async (req, res) => {
                     await db.query(`${stringValue};`);
                     return res.status(200).json({ message: 'Tạo thất bại!' });
                 }
-            }
+            // }
         }
 
     } catch (error) {

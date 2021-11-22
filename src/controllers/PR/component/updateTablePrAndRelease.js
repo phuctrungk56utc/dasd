@@ -32,7 +32,9 @@ let updateTablePrAndRelease = async (resultSap, req, dataCallSap,userId) => {
         var release_ID = await db.query(`${stringRelease};`);
         //update status draft to submit
         //have release 
-        if (release_ID.rows.length === 0) {
+        var userRl = await db.query(`select "Release_Level", "userId" from prm."Strategy" WHERE "Release_ID" = '${release_ID.rows[0].Release_ID}' and "ReleaseType" = 'PR'`);
+        var lengX = userRl.rows.length;
+        if (release_ID.rows.length === 0 || lengX === 0) {
             //no release to status comp
             var rs = await db.query(`UPDATE prm."PrTable"
                 SET "PR_SAP"=${resultSap.HEADER.PR_SAP}, "DESCRIPTION"='${dataCallSap.HEADER.DESCRIPTION}', "changeBy"='${userId}',"STATUS"=5, 
@@ -61,12 +63,12 @@ let updateTablePrAndRelease = async (resultSap, req, dataCallSap,userId) => {
             resultSap.HEADER.changeAt = rs.rows[0].changeAt;
             resultSap.HEADER.STATUS = rs.rows[0].STATUS;
 
-            var userRl = await db.query(`select "Release_Level", "userId" from prm."Strategy" WHERE "Release_ID" = '${release_ID.rows[0].Release_ID}' and "ReleaseType" = 'PR'`);
+            // var userRl = await db.query(`select "Release_Level", "userId" from prm."Strategy" WHERE "Release_ID" = '${release_ID.rows[0].Release_ID}' and "ReleaseType" = 'PR'`);
+            // var lengX = userRl.rows.length;
             // if(isUpdateSubmit){
             await db.query(`DELETE FROM prm."PR_RELEASE_STRATEGY"
                 WHERE "PR_NO"=${resultSap.HEADER.PR_NO};`)
             var query_PR_RL_STRA = `INSERT INTO prm."PR_RELEASE_STRATEGY" ("PR_NO","userId","RELEASE_LEVEL") VALUES`;
-            var lengX = userRl.rows.length;
             var stringValueNoti = `INSERT INTO prm."Notification"(
                     "forUserId","FromUserId","PR_NO", "StatusCode", "StatusDescription", "createAt", "changeAt", "NotiTypeDescription", "NotiType")
                     VALUES`;
