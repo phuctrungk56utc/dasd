@@ -26,6 +26,9 @@ let postReleaseCondition = async (req, res) => {
             userId = decodeTk.userId;
         }
         await db.query(`DELETE FROM prm."${req.body.params.releaseType}"; `);
+        if(req.body.params.table.length === 0){
+            return res.status(200).json( {message:'Xóa thành công'});
+        }
         var queryInsert = `INSERT INTO prm."${req.body.params.releaseType}"(
                 "Release_ID", "Description", "createBy", "changeBy", "createdAt", "changeAt",`;
         const listRelease = await db.query(`SELECT * FROM prm."ModuleReleaseConditionType" WHERE "tableName"='${req.body.params.releaseType}'`);

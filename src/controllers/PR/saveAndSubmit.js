@@ -89,7 +89,7 @@ let saveAndSubmit = async (req, res) => {
                             
                             var rs = await updateTable.updateTablePrAndRelease(data.data[0], req,dataCallSap,userId);
                             // console.log(rs);
-                            if (rs) {
+                            if (rs.code && rs.code !== 400) {
                                 await db.query(`DELETE FROM prm."PrItem"
                                 WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
                                 // dataItem = rs.ITEM[0];
@@ -100,12 +100,12 @@ let saveAndSubmit = async (req, res) => {
                                 for (let i in dataItem) {
                                     // dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
                                     var stringValueChiden = '';
-                                    stringValueChiden = `('${rs.ITEM[i].PR_NO}','${rs.ITEM[i].PR_ITEM}','${rs.ITEM[i].KNTTP}','${rs.ITEM[i].PSTYP}','${rs.ITEM[i].MATNR}','${rs.ITEM[i].MATKL}','${rs.ITEM[i].TXZ01}'
-                                    ,'${rs.ITEM[i].WERKS}','${rs.ITEM[i].LGORT}','${rs.ITEM[i].LFDAT}','${rs.ITEM[i].LIFNR}','${rs.ITEM[i].MENGE}','${rs.ITEM[i].MEINS}','${rs.ITEM[i].PREIS}'
-                                    ,'${rs.ITEM[i].WEARS}','${rs.ITEM[i].PEINH}','${rs.ITEM[i].GSWRT}','${rs.ITEM[i].LOCAL_AMOUNT}','${rs.ITEM[i].EBELN}','${rs.ITEM[i].EBELP}','${rs.ITEM[i].LOEKZ}'
-                                    ,'${rs.ITEM[i].EKORG}','${rs.ITEM[i].EKGRP}','${rs.ITEM[i].WEPOS}','${rs.ITEM[i].WEUNB}','${rs.ITEM[i].BLCKD}','${rs.ITEM[i].REPOS}','${rs.ITEM[i].BLCKT}'
-                                    ,'${rs.ITEM[i].SAKTO}','${rs.ITEM[i].KOSTL}','${rs.ITEM[i].PRCTR}','${rs.ITEM[i].ANLN1}','${rs.ITEM[i].ANLN2}','${rs.ITEM[i].AUFNR}','${rs.ITEM[i].GSBER}'
-                                    ,'${rs.ITEM[i].KOKRS}','${rs.ITEM[i].GEBER}','${rs.ITEM[i].FIPOS}','${rs.ITEM[i].FKBER}','${rs.ITEM[i].FISTL}','${rs.ITEM[i].INFNR}')`;
+                                    stringValueChiden = `('${rs.data.ITEM[i].PR_NO}','${rs.data.ITEM[i].PR_ITEM}','${rs.data.ITEM[i].KNTTP}','${rs.data.ITEM[i].PSTYP}','${rs.data.ITEM[i].MATNR}','${rs.data.ITEM[i].MATKL}','${rs.data.ITEM[i].TXZ01}'
+                                    ,'${rs.data.ITEM[i].WERKS}','${rs.data.ITEM[i].LGORT}','${rs.data.ITEM[i].LFDAT}','${rs.data.ITEM[i].LIFNR}','${rs.data.ITEM[i].MENGE}','${rs.data.ITEM[i].MEINS}','${rs.data.ITEM[i].PREIS}'
+                                    ,'${rs.data.ITEM[i].WEARS}','${rs.data.ITEM[i].PEINH}','${rs.data.ITEM[i].GSWRT}','${rs.data.ITEM[i].LOCAL_AMOUNT}','${rs.data.ITEM[i].EBELN}','${rs.data.ITEM[i].EBELP}','${rs.data.ITEM[i].LOEKZ}'
+                                    ,'${rs.data.ITEM[i].EKORG}','${rs.data.ITEM[i].EKGRP}','${rs.data.ITEM[i].WEPOS}','${rs.data.ITEM[i].WEUNB}','${rs.data.ITEM[i].BLCKD}','${rs.data.ITEM[i].REPOS}','${rs.data.ITEM[i].BLCKT}'
+                                    ,'${rs.data.ITEM[i].SAKTO}','${rs.data.ITEM[i].KOSTL}','${rs.data.ITEM[i].PRCTR}','${rs.data.ITEM[i].ANLN1}','${rs.data.ITEM[i].ANLN2}','${rs.data.ITEM[i].AUFNR}','${rs.data.ITEM[i].GSBER}'
+                                    ,'${rs.data.ITEM[i].KOKRS}','${rs.data.ITEM[i].GEBER}','${rs.data.ITEM[i].FIPOS}','${rs.data.ITEM[i].FKBER}','${rs.data.ITEM[i].FISTL}','${rs.data.ITEM[i].INFNR}')`;
                                     if (leng > Number(i) + 1) {
                                         stringValueChiden += ','
                                     }
@@ -114,6 +114,8 @@ let saveAndSubmit = async (req, res) => {
                                 }
                                 await db.query(`${stringValue};`);
                                 return res.status(200).json(data.data);
+                            }else{
+                                return res.status(200).json({message:rs.message});
                             }
                             // return res.status(200).json(data.data);
                         }else{
@@ -234,7 +236,7 @@ let saveAndSubmit = async (req, res) => {
                         //check condition return release_ID
                         var rs = await updateTable.updateTablePrAndRelease(data.data[0], req,dataCallSap,userId);
                         // console.log(rs);
-                        if (rs) {
+                        if (rs.code !== 400) {
                             await db.query(`DELETE FROM prm."PrItem"
                             WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
                             // dataItem = rs.ITEM[0];
@@ -245,12 +247,12 @@ let saveAndSubmit = async (req, res) => {
                             for (let i in dataItem) {
                                 // dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
                                 var stringValueChiden = '';
-                                stringValueChiden = `('${rs.ITEM[i].PR_NO}','${rs.ITEM[i].PR_ITEM}','${rs.ITEM[i].KNTTP}','${rs.ITEM[i].PSTYP}','${rs.ITEM[i].MATNR}','${rs.ITEM[i].MATKL}','${rs.ITEM[i].TXZ01}'
-                                ,'${rs.ITEM[i].WERKS}','${rs.ITEM[i].LGORT}','${rs.ITEM[i].LFDAT}','${rs.ITEM[i].LIFNR}','${rs.ITEM[i].MENGE}','${rs.ITEM[i].MEINS}','${rs.ITEM[i].PREIS}'
-                                ,'${rs.ITEM[i].WEARS}','${rs.ITEM[i].PEINH}','${rs.ITEM[i].GSWRT}','${rs.ITEM[i].LOCAL_AMOUNT}','${rs.ITEM[i].EBELN}','${rs.ITEM[i].EBELP}','${rs.ITEM[i].LOEKZ}'
-                                ,'${rs.ITEM[i].EKORG}','${rs.ITEM[i].EKGRP}','${rs.ITEM[i].WEPOS}','${rs.ITEM[i].WEUNB}','${rs.ITEM[i].BLCKD}','${rs.ITEM[i].REPOS}','${rs.ITEM[i].BLCKT}'
-                                ,'${rs.ITEM[i].SAKTO}','${rs.ITEM[i].KOSTL}','${rs.ITEM[i].PRCTR}','${rs.ITEM[i].ANLN1}','${rs.ITEM[i].ANLN2}','${rs.ITEM[i].AUFNR}','${rs.ITEM[i].GSBER}'
-                                ,'${rs.ITEM[i].KOKRS}','${rs.ITEM[i].GEBER}','${rs.ITEM[i].FIPOS}','${rs.ITEM[i].FKBER}','${rs.ITEM[i].FISTL}','${rs.ITEM[i].INFNR}')`;
+                                stringValueChiden = `('${rs.data.data.ITEM[i].PR_NO}','${rs.data.ITEM[i].PR_ITEM}','${rs.data.ITEM[i].KNTTP}','${rs.data.ITEM[i].PSTYP}','${rs.data.ITEM[i].MATNR}','${rs.data.ITEM[i].MATKL}','${rs.data.ITEM[i].TXZ01}'
+                                ,'${rs.data.ITEM[i].WERKS}','${rs.data.ITEM[i].LGORT}','${rs.data.ITEM[i].LFDAT}','${rs.data.ITEM[i].LIFNR}','${rs.data.ITEM[i].MENGE}','${rs.data.ITEM[i].MEINS}','${rs.data.ITEM[i].PREIS}'
+                                ,'${rs.data.ITEM[i].WEARS}','${rs.data.ITEM[i].PEINH}','${rs.data.ITEM[i].GSWRT}','${rs.data.ITEM[i].LOCAL_AMOUNT}','${rs.data.ITEM[i].EBELN}','${rs.data.ITEM[i].EBELP}','${rs.data.ITEM[i].LOEKZ}'
+                                ,'${rs.data.ITEM[i].EKORG}','${rs.data.ITEM[i].EKGRP}','${rs.data.ITEM[i].WEPOS}','${rs.data.ITEM[i].WEUNB}','${rs.data.ITEM[i].BLCKD}','${rs.data.ITEM[i].REPOS}','${rs.data.ITEM[i].BLCKT}'
+                                ,'${rs.data.ITEM[i].SAKTO}','${rs.data.ITEM[i].KOSTL}','${rs.data.ITEM[i].PRCTR}','${rs.data.ITEM[i].ANLN1}','${rs.data.ITEM[i].ANLN2}','${rs.data.ITEM[i].AUFNR}','${rs.data.ITEM[i].GSBER}'
+                                ,'${rs.data.ITEM[i].KOKRS}','${rs.data.ITEM[i].GEBER}','${rs.data.ITEM[i].FIPOS}','${rs.data.ITEM[i].FKBER}','${rs.data.ITEM[i].FISTL}','${rs.data.ITEM[i].INFNR}')`;
                                 if (leng > Number(i) + 1) {
                                     stringValueChiden += ','
                                 }
@@ -260,6 +262,8 @@ let saveAndSubmit = async (req, res) => {
                             await db.query(`${stringValue};`);
                             // data.data.HEADER.PR_TYPE = dataCallSap.HEADER.PR_TYPE;
                             return res.status(200).json(data.data);
+                        }else{
+                            return res.status(200).json({message:rs.message});
                         }
                     }else{
                         var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",

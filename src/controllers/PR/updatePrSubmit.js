@@ -256,7 +256,7 @@ let updatePrSubmit = async (req, res) => {
 						if (data.data.HEADER.TYPE === 'S') {
 								var rs = await updateTable.updateTablePrAndRelease(data.data, req,dataCallSap,userId);
 								// console.log(rs);
-								if (rs) {
+								if (rs.code !== 400) {
 									// dataItem = rs.ITEM[0];
 									var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
 								"MENGE","MEINS","PREIS","WEARS","PEINH","GSWRT","LOCAL_AMOUNT","EBELN","EBELP","LOEKZ","EKORG","EKGRP","WEPOS","WEUNB",
@@ -278,7 +278,7 @@ let updatePrSubmit = async (req, res) => {
 										stringValue += stringValueChiden;
 									}
 									await db.query(`${stringValue};`);
-									return res.status(200).json(rs);
+									return res.status(200).json(rs.data);
 									// return res.status(200).json(data.data);
 								}
 								// return res.status(200).json(data.data);

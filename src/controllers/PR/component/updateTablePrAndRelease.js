@@ -30,9 +30,13 @@ let updateTablePrAndRelease = async (resultSap, req, dataCallSap,userId) => {
             stringRelease += stringValueChidden;
         }
         var release_ID = await db.query(`${stringRelease};`);
+        if(release_ID.rows.length === 0){
+            return ({code:400,message:'not found Release_ID'});
+        }
         //update status draft to submit
         //have release 
         var userRl = await db.query(`select "Release_Level", "userId" from prm."Strategy" WHERE "Release_ID" = '${release_ID.rows[0].Release_ID}' and "ReleaseType" = 'PR'`);
+
         var lengX = userRl.rows.length;
         if (release_ID.rows.length === 0 || lengX === 0) {
             //no release to status comp
@@ -48,7 +52,7 @@ let updateTablePrAndRelease = async (resultSap, req, dataCallSap,userId) => {
             resultSap.HEADER.createBy = rs.rows[0].createBy;
             resultSap.HEADER.changeAt = rs.rows[0].changeAt;
             resultSap.HEADER.STATUS = rs.rows[0].STATUS;
-            return (resultSap);
+            return ({code:200,data:resultSap});
         }
         else {
             var rs = await db.query(`UPDATE prm."PrTable"
@@ -114,7 +118,7 @@ let updateTablePrAndRelease = async (resultSap, req, dataCallSap,userId) => {
             await db.query(`${query_PR_RL_STRA};`);
             // }  
             //update PR Item
-            return (resultSap);
+            return ({code:200,data:resultSap});
         }
         // resolve(data);
     } catch (error) {
