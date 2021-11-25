@@ -38,13 +38,13 @@ let getApproveDetail = async (req, res) => {
 		var query;
 		if (size > 0) {
 			query = `SELECT * FROM prm."PR_RELEASE_STRATEGY" 
-        WHERE "${Object.keys(req.query)[0]}"=${String(req.query[Object.keys(req.query)[0]])};`
+        WHERE "${Object.keys(req.query)[0]}"=${String(req.query[Object.keys(req.query)[0]])} ORDER BY "RELEASE_LEVEL" ASC ;`
 		} else {
-			query = `SELECT * FROM prm."PR_RELEASE_STRATEGY" ;`
+			query = `SELECT * FROM prm."PR_RELEASE_STRATEGY"  ORDER BY "RELEASE_LEVEL" ASC ;`
 		}
 		// get and check author for PR approve
 		const author = await db.query(`select * from prm."PR_RELEASE_STRATEGY" WHERE
-					 "PR_NO"=${String(req.query[Object.keys(req.query)[0]])} `);
+					 "PR_NO"=${String(req.query[Object.keys(req.query)[0]])}  ORDER BY "RELEASE_LEVEL" ASC ;`);
 		var RELEASE_LEVEL = 1;
 		for (let index in author.rows) {
 			if (author.rows[index].userId === String(userId).toUpperCase()) {

@@ -22,7 +22,7 @@ const db = require("../../db/db");
 let getUser = async (req, res) => {
   try {
     // await sleep.sleep(1);
-    db.query(`SELECT * FROM prm."userInfo"
+    db.query(`SELECT "userId","activate","createBy","changeBy","createAt","changeAt" FROM prm."users"
     ORDER BY "userId" ASC `, (err, resp) => {
         if (err) {
             return res.status(500).json({ database: err });

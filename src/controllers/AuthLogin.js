@@ -22,10 +22,13 @@ const db = require("../db/db");
 let authLogin = async (req, res) => {
   try {
     // await sleep.sleep(1);
-    db.query(`SELECT * FROM prm.users users WHERE "users"."userId" = '${req.body.userId.toUpperCase()}'`, (err, resp) => {
+    const resp = await db.query(`SELECT * FROM prm.users users WHERE "users"."userId" = '${req.body.userId.toUpperCase()}'`)
       // const ciphertext = crypt.encrypt(String(req.body.password));
       try {
         // var roleData = null
+        if(!resp.rows[0].activate || resp.rows[0].activate === 'false'){
+          return res.status(404).json({ error: 'user not activate' });
+        }
         if (req.body.userId.toUpperCase() === resp.rows[0].userId && crypt.encrypt(String(req.body.password)) === resp.rows[0].password) {
           const DbAccessTK = jwt.sign(
             {
@@ -51,31 +54,27 @@ let authLogin = async (req, res) => {
           )
           const accessToken = crypt.encrypt(DbAccessTK);
           const refreshToken = crypt.encrypt(DbRefreshTK);
+          await db.query(`UPDATE prm.users
+          SET "refreshToken"='${refreshToken}' WHERE "userId" = '${req.body.userId.toUpperCase()}'`)
+          return res.status(200).json({ accessToken: accessToken });
           //update to database
           // roleData = resp.rows;
-          db.query(`UPDATE prm.users
-          SET "refreshToken"='${refreshToken}' WHERE "userId" = '${req.body.userId}'`, (err, resp) => {
-            if (err) {
-              return res.status(500).json({ database: err });
-            }
-            return res.status(200).json({ accessToken: accessToken });
-          })
         } else {
           return res.status(404).json({ error: 'Password is incorrect' });
         }
       } catch (error) {
-        
         return res.status(404).json({ error: 'user not found' });
       }
-
-    })
+    // console.log(resp)
+    // await db.query(`UPDATE prm.users
+    // SET "refreshToken"='${refreshToken}' WHERE "userId" = '${req.body.userId}'`)
   } catch (error) {
     return res.status(500).json(error);
   }
 }
 
 let auThRefresh = async (req, res) => {
-
+  
 
   db.query(`SELECT * FROM prm.roles WHERE "userId" = '${decodeTk.userId}'
   ORDER BY "roleId" ASC`, (err, resp) => {

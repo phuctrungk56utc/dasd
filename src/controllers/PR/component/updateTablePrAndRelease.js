@@ -105,7 +105,7 @@ let updateTablePrAndRelease = async (resultSap, req, dataCallSap,userId) => {
 
 
                 var stringValueChidden = '';
-                stringValueChidden = `(${resultSap.HEADER.PR_NO},'${userRl.rows[index].userId}','${userRl.rows[index].Release_Level}')`;
+                stringValueChidden = `(${resultSap.HEADER.PR_NO},'${userRl.rows[index].userId.toUpperCase()}','${userRl.rows[index].Release_Level}')`;
                 if (lengX > Number(index) + 1) {
                     stringValueChidden += ','
                 }

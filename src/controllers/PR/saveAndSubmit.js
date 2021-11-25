@@ -89,7 +89,7 @@ let saveAndSubmit = async (req, res) => {
                             
                             var rs = await updateTable.updateTablePrAndRelease(data.data[0], req,dataCallSap,userId);
                             // console.log(rs);
-                            if (rs.code && rs.code !== 400) {
+                            if (rs.code && rs.code === 200) {
                                 await db.query(`DELETE FROM prm."PrItem"
                                 WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
                                 // dataItem = rs.ITEM[0];
@@ -113,9 +113,9 @@ let saveAndSubmit = async (req, res) => {
                                     stringValue += stringValueChiden;
                                 }
                                 await db.query(`${stringValue};`);
-                                return res.status(200).json(data.data);
+                                return res.status(200).json({data:data.data});
                             }else{
-                                return res.status(200).json({message:rs.message});
+                                return res.status(201).json({data:data.data,message:rs.message});
                             }
                             // return res.status(200).json(data.data);
                         }else{
@@ -143,7 +143,7 @@ let saveAndSubmit = async (req, res) => {
                             stringValue += stringValueChiden;
                         }
                         await db.query(`${stringValue};`);
-                        return res.status(200).json({ message: 'Tạo thất bại!' });
+                        return res.status(200).json({ data:data.data,message: 'Tạo thất bại!' });
                     }
                 // } else {
                 //     return res.status(404).json({ message: 'Không tìm thấy đường dẫn!' });
@@ -151,7 +151,7 @@ let saveAndSubmit = async (req, res) => {
                 // return res.status(200).json({ message: 'success' });
                 // console.log('object');
             } else {
-                return res.status(404).json({ message: 'Cập nhật thất bại!,Kiểm tra số PR' });
+                return res.status(404).json({data:data.data, message: 'Cập nhật thất bại!,Kiểm tra số PR' });
             }
 
         } else {
@@ -236,7 +236,7 @@ let saveAndSubmit = async (req, res) => {
                         //check condition return release_ID
                         var rs = await updateTable.updateTablePrAndRelease(data.data[0], req,dataCallSap,userId);
                         // console.log(rs);
-                        if (rs.code !== 400) {
+                        if (rs.code === 200) {
                             await db.query(`DELETE FROM prm."PrItem"
                             WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
                             // dataItem = rs.ITEM[0];
@@ -261,9 +261,9 @@ let saveAndSubmit = async (req, res) => {
                             }
                             await db.query(`${stringValue};`);
                             // data.data.HEADER.PR_TYPE = dataCallSap.HEADER.PR_TYPE;
-                            return res.status(200).json(data.data);
+                            return res.status(200).json({data:data.data});
                         }else{
-                            return res.status(200).json({message:rs.message});
+                            return res.status(200).json({data:data.data,message:rs.message});
                         }
                     }else{
                         var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
@@ -311,7 +311,7 @@ let saveAndSubmit = async (req, res) => {
                         stringValue += stringValueChiden;
                     }
                     await db.query(`${stringValue};`);
-                    return res.status(200).json({ message: 'Tạo thất bại!' });
+                    return res.status(200).json({data:data.data, message: 'Tạo thất bại!' });
                 }
             // }
         }

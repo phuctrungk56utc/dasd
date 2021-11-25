@@ -99,7 +99,7 @@ let postReleaseConfigList = async (req, res) => {
                         }
 
                     } else if (dataRq.columnType === 'int' || dataRq.columnType === 'integer' || dataRq.columnType === 'Number') {
-                        typeDB = `"${dataRq.columnName + "_From"}" integer,
+                        typeDB = `"${dataRq.columnName + "_From"}" bigint,
                     "${dataRq.columnName + "_To"}" integer,`
                     } else if (dataRq.columnType === 'boolean' || dataRq.columnType === 'Boolean') {
                         typeDB = `"${dataRq.columnName}" boolean,`

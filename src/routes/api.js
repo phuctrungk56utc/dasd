@@ -72,8 +72,12 @@ const getListRelease = require("../controllers/moduleRelease/getListRelease");
 const postStrategy = require("../controllers/moduleRelease/postStrategy");
 //get getUser
 const getUser = require("../controllers/userManage/getAllUser");
+//createUsers
+const createUsers = require("../controllers/userManage/createUsers");
 //get role
 const getRole = require("../controllers/role/getRole");
+//getUserRole
+const getUserRole = require("../controllers/role/getUserRole");
 //post role
 const postRole = require("../controllers/role/postRole");
 
@@ -85,21 +89,25 @@ const postRole = require("../controllers/role/postRole");
 let initAPIs = (app) => {
   router.use(cors());
   router.post("/login", AuthController.login);
-  router.post("/authLogin",AuthLoginMiddleware, AuthLogin.authLogin);
+  router.post("/authLogin", AuthLoginMiddleware, AuthLogin.authLogin);
   router.post("/refresh-token", AuthController.refreshToken);
-  router.post("/auThRefresh",AuthRefreshMiddleware, AuthLogin.auThRefresh);
+  router.post("/auThRefresh", AuthRefreshMiddleware, AuthLogin.auThRefresh);
 
 
-  router.get("/hiddenItem", hiddenItem.hiddenItem);
-  router.get("/PrType", PrType.PrType);
   // router.get("/PrTable", PrTable.PrTable);
   // Sử dụng authMiddleware.isAuth trước những api cần xác thực
   router.use(isPrData.isPrData);
+  //Configuration
+  router.get("/hiddenItem", hiddenItem.hiddenItem);
+  router.get("/PrType", PrType.PrType);
+  router.post("/updateHiddenItem", updateHiddenItem.updateHiddenItem);
   
+  //PR
   router.get("/PrTablePrApprove", PrTablePrApprove.PrTablePrApprove);
   router.get("/PrTable", PrTable.PrTable);
   router.get("/PrItem", PrItem.PrItem);
-  router.post("/updateHiddenItem", updateHiddenItem.updateHiddenItem);
+  //dm đây là Approve detail
+  router.get("/ApproveDetail", getApproveDetail.getApproveDetail);
   //module Release
   router.get("/moduleTable", moduleTable.moduleTable);
   router.post("/moduleTable", postModuleRelease.postModuleRelease);
@@ -121,7 +129,7 @@ let initAPIs = (app) => {
   router.get("/getMasterData", getAllMasterData.getAllMasterData);
   router.post("/postMasterData", postMasterData.postMasterData);
   router.post("/postMaterial", postMaterial.postMaterial);
-  
+
 
   router.get("/companyCode", getCompanyCode.companyCode);
   router.post("/CompanyCode", postCompanyCode.postCompanyCode);
@@ -132,10 +140,9 @@ let initAPIs = (app) => {
   router.get("/PurchasingOrg", PurchasingOrg.PurchasingOrg);
   router.post("/PurchasingOrg", postPurchasingOrg.postPurchasingOrg);
 
-  //dm đây là Approve detail
-  router.get("/ApproveDetail", getApproveDetail.getApproveDetail);
+
   //dm đây là  List Protect APIs:
-  router.get("/friends", FriendController.friendLists);
+  // router.get("/friends", FriendController.friendLists);
   // router.get("/example-protect-api", ExampleController.someAction);
   //dm đây là approvePr
   router.post("/approvePr", approvePr.approvePr);
@@ -144,25 +151,29 @@ let initAPIs = (app) => {
   //dm đây là delete PR
   router.post("/deletePr", deletePr.deletePr);
   //dm đây là upload File
-  router.post("/uploadFiles",uploadFiles.upload.array('myFile', 10) ,uploadFiles.uploadFiles);
+  router.post("/uploadFiles", uploadFiles.upload.array('myFile', 10), uploadFiles.uploadFiles);
   //dm đây là  get list file upload
-  router.get("/getListFile" ,getListFile.getListFile);
+  router.get("/getListFile", getListFile.getListFile);
   //dm đây là download file
-  router.get("/downloadFile" ,uploadFiles.downloadFile);
+  router.get("/downloadFile", uploadFiles.downloadFile);
   //dm đây là  get getNotification
-  router.get("/getNotification" ,getNotification.getNotification);
+  router.get("/getNotification", getNotification.getNotification);
   //dm đây là  update status code notification
-  router.post("/updateStatus" ,updateStatus.updateStatus);
+  router.post("/updateStatus", updateStatus.updateStatus);
   //dm đây là get list Release
-  router.get("/getListRelease" ,getListRelease.getListRelease);
+  router.get("/getListRelease", getListRelease.getListRelease);
   //dm đây là post postStrategy
-  router.post("/postStrategy" ,postStrategy.postStrategy);
+  router.post("/postStrategy", postStrategy.postStrategy);
   //dm đây là get user
-  router.get("/getUsers" ,getUser.getUser);
+  router.get("/getUsers", getUser.getUser);
+  //createUsers
+  router.post("/createUsers", createUsers.createUsers);
   //get role
-  router.get("/getRole" ,getRole.getRole);
+  router.get("/getRole", getRole.getRole);
+  //getUserRole
+  router.get("/getUserRole", getUserRole.getUserRole);
   //post role
-  router.post("/postRole" ,postRole.postRole);
+  router.post("/postRole", postRole.postRole);
   return app.use("/", router);
 }
 // module.exports = {

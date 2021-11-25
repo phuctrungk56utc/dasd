@@ -35,7 +35,7 @@ let PrTablePrApprove = async (req, res) => {
     // await sleep.sleep(1);
     // db.query(`SELECT * FROM prm."PrTable" INNER JOIN prm."PrItem" ON prm."PrTable"."PrNumber" = prm."PrItem"."PrNumber"`, (err, resp) => {
     db.query(`SELECT * FROM prm."PrTable" pr INNER JOIN prm."PR_RELEASE_STRATEGY" rl ON pr."PR_NO" = rl."PR_NO" WHERE pr."PR_SAP" <> 0
-    and rl."userId" = '${userId.toUpperCase()}'
+    and rl."userId" = '${userId.toUpperCase()}' or rl."userId" = '${userId.toLowerCase()}'
         ORDER BY pr."changeAt" DESC
         ;`, (err, resp) => {
         if (err) {

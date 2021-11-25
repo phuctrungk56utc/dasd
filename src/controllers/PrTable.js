@@ -25,6 +25,7 @@ const db = require("../db/db");
   date: 'yeu e'
 }
 let PrTable = async (req, res) => {
+  var start = new Date().getTime();
   // var notification = socIo;
   // notification.ioObject.socketIo.to(notification.ioObject.listUSer[0].id).emit("sendDataServer",{user});
   try {
@@ -45,6 +46,11 @@ let PrTable = async (req, res) => {
         if (err) {
             return res.status(500).json({ database: err });
           } else {
+            var end = new Date().getTime();
+            var time = end - start;
+            console.log(time)
+            
+
             return res.status(200).json({ item: resp.rows });
           }
     }) 

@@ -232,9 +232,9 @@ const socketIo = require("socket.io")(server, {
     origin: "*",
   }
 });
-const user = {
-  date: 'ngay nao do vang em'
-}
+// const user = {
+//   date: 'ngay nao do vang em'
+// }
 var listUSer = [];
 
 socketIo.on("connection", (socket) => { ///Handle khi có connect từ client tới

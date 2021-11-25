@@ -38,7 +38,7 @@ let postStrategy = async (req, res) => {
                 var stringValueChiden = '';
                 stringValueChiden = `('${req.body.params.dataStrategy[index].Release_ID}','${req.body.params.dataStrategy[index].Description}',
             '${req.body.params.dataStrategy[index].Release_Level}','${req.body.params.dataStrategy[index].ReleaseType}',
-            '${req.body.params.dataStrategy[index].userId}','now()','now()','${userId}','${userId}')`;
+            '${req.body.params.dataStrategy[index].userId.toUpperCase()}','now()','now()','${userId}','${userId}')`;
                 if (leng > Number(index) + 1) {
                     stringValueChiden += ','
                 }

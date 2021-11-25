@@ -15,7 +15,7 @@ let getNotification = async (req, res) => {
 	try {
 
 			query = `SELECT * FROM prm."Notification" 
-		WHERE "forUserId" = '${req.query.userId}'  ORDER BY "changeAt" ASC;`
+		WHERE "forUserId" = '${req.query.userId}'  ORDER BY "createAt" DESC;`
 		//WHERE "forUserId" = '${req.query.userId}' and "StatusCode" != 'X' ORDER BY "changeAt" DESC;`
 		db.query(query, (err, resp) => {
 			if (err) {
