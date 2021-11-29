@@ -13,6 +13,7 @@ const updateTable = require("./component/updateTablePrAndRelease");
  * @param {*} res 
  */
 let saveAndSubmit = async (req, res) => {
+    var dataItem = null
     try {
         var userId = '';
         try {
@@ -27,7 +28,7 @@ let saveAndSubmit = async (req, res) => {
 
         if (req.body.params.dataPR.HEADER.PR_NO !== '' && req.body.params.dataPR.HEADER.PR_NO !== 0) {
             //update table Header 
-            const dataItem = req.body.params.dataPR.ITEM;
+            dataItem = req.body.params.dataPR.ITEM;
             const leng = dataItem.length;
             if (leng === 0) {
                 return res.status(404).json({ message: 'Yêu cầu có item!' });
@@ -115,10 +116,55 @@ let saveAndSubmit = async (req, res) => {
                                 await db.query(`${stringValue};`);
                                 return res.status(200).json({data:data.data});
                             }else{
-                                return res.status(201).json({data:data.data,message:rs.message});
+                                await db.query(`DELETE FROM prm."PrItem"
+                                WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
+                                var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
+                                "MENGE","MEINS","PREIS","WEARS","PEINH","GSWRT","LOCAL_AMOUNT","EBELN","EBELP","LOEKZ","EKORG","EKGRP","WEPOS","WEUNB",
+                                "BLCKD","REPOS","BLCKT","SAKTO","KOSTL","PRCTR","ANLN1","ANLN2","AUFNR","GSBER","KOKRS","GEBER","FIPOS","FKBER","FISTL","INFNR") VALUES`;
+                                    const leng = dataItem.length
+                                    for (let i in dataItem) {
+                                        dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
+                                        var stringValueChiden = '';
+                                        stringValueChiden = `('${dataItem[i].PR_NO}','${dataItem[i].PR_ITEM}','${dataItem[i].KNTTP}','${dataItem[i].PSTYP}','${dataItem[i].MATNR}','${dataItem[i].MATKL}','${dataItem[i].TXZ01}'
+                                        ,'${dataItem[i].WERKS}','${dataItem[i].LGORT}','${dataItem[i].LFDAT}','${dataItem[i].LIFNR}','${dataItem[i].MENGE}','${dataItem[i].MEINS}','${dataItem[i].PREIS}'
+                                        ,'${dataItem[i].WEARS}','${dataItem[i].PEINH}','${dataItem[i].GSWRT}','${dataItem[i].LOCAL_AMOUNT}','${dataItem[i].EBELN}','${dataItem[i].EBELP}','${dataItem[i].LOEKZ}'
+                                        ,'${dataItem[i].EKORG}','${dataItem[i].EKGRP}','${dataItem[i].WEPOS}','${dataItem[i].WEUNB}','${dataItem[i].BLCKD}','${dataItem[i].REPOS}','${dataItem[i].BLCKT}'
+                                        ,'${dataItem[i].SAKTO}','${dataItem[i].KOSTL}','${dataItem[i].PRCTR}','${dataItem[i].ANLN1}','${dataItem[i].ANLN2}','${dataItem[i].AUFNR}','${dataItem[i].GSBER}'
+                                        ,'${dataItem[i].KOKRS}','${dataItem[i].GEBER}','${dataItem[i].FIPOS}','${dataItem[i].FKBER}','${dataItem[i].FISTL}','${dataItem[i].INFNR}')`;
+                                        if (leng > Number(i) + 1) {
+                                            stringValueChiden += ','
+                                        }
+            
+                                        stringValue += stringValueChiden;
+                                    }
+                                    await db.query(`${stringValue};`);
+                                return res.status(201).json({data:rs.data,message:rs.message});
                             }
                             // return res.status(200).json(data.data);
                         }else{
+                            await db.query(`DELETE FROM prm."PrItem"
+                            WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
+                            var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
+                            "MENGE","MEINS","PREIS","WEARS","PEINH","GSWRT","LOCAL_AMOUNT","EBELN","EBELP","LOEKZ","EKORG","EKGRP","WEPOS","WEUNB",
+                            "BLCKD","REPOS","BLCKT","SAKTO","KOSTL","PRCTR","ANLN1","ANLN2","AUFNR","GSBER","KOKRS","GEBER","FIPOS","FKBER","FISTL","INFNR") VALUES`;
+                                const leng = dataItem.length
+                                for (let i in dataItem) {
+                                    dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
+                                    var stringValueChiden = '';
+                                    stringValueChiden = `('${dataItem[i].PR_NO}','${dataItem[i].PR_ITEM}','${dataItem[i].KNTTP}','${dataItem[i].PSTYP}','${dataItem[i].MATNR}','${dataItem[i].MATKL}','${dataItem[i].TXZ01}'
+                                    ,'${dataItem[i].WERKS}','${dataItem[i].LGORT}','${dataItem[i].LFDAT}','${dataItem[i].LIFNR}','${dataItem[i].MENGE}','${dataItem[i].MEINS}','${dataItem[i].PREIS}'
+                                    ,'${dataItem[i].WEARS}','${dataItem[i].PEINH}','${dataItem[i].GSWRT}','${dataItem[i].LOCAL_AMOUNT}','${dataItem[i].EBELN}','${dataItem[i].EBELP}','${dataItem[i].LOEKZ}'
+                                    ,'${dataItem[i].EKORG}','${dataItem[i].EKGRP}','${dataItem[i].WEPOS}','${dataItem[i].WEUNB}','${dataItem[i].BLCKD}','${dataItem[i].REPOS}','${dataItem[i].BLCKT}'
+                                    ,'${dataItem[i].SAKTO}','${dataItem[i].KOSTL}','${dataItem[i].PRCTR}','${dataItem[i].ANLN1}','${dataItem[i].ANLN2}','${dataItem[i].AUFNR}','${dataItem[i].GSBER}'
+                                    ,'${dataItem[i].KOKRS}','${dataItem[i].GEBER}','${dataItem[i].FIPOS}','${dataItem[i].FKBER}','${dataItem[i].FISTL}','${dataItem[i].INFNR}')`;
+                                    if (leng > Number(i) + 1) {
+                                        stringValueChiden += ','
+                                    }
+        
+                                    stringValue += stringValueChiden;
+                                }
+                                await db.query(`${stringValue};`);
+
                             req.body.params.dataPR.HEADER.changeAt = update.rows[0].changeAt;
                             return res.status(404).json({data:data.data,dataHeader:req.body.params.dataPR.HEADER});
                         }
@@ -156,7 +202,7 @@ let saveAndSubmit = async (req, res) => {
 
         } else {
             //insert
-            const dataItem = req.body.params.dataPR.ITEM;
+            dataItem = req.body.params.dataPR.ITEM;
             const leng = dataItem.length;
             if (leng === 0) {
                 return res.status(404).json({ message: 'Yêu cầu có item!' });
@@ -263,7 +309,29 @@ let saveAndSubmit = async (req, res) => {
                             // data.data.HEADER.PR_TYPE = dataCallSap.HEADER.PR_TYPE;
                             return res.status(200).json({data:data.data});
                         }else{
-                            return res.status(200).json({data:data.data,message:rs.message});
+                            await db.query(`DELETE FROM prm."PrItem"
+                            WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
+                            var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
+                            "MENGE","MEINS","PREIS","WEARS","PEINH","GSWRT","LOCAL_AMOUNT","EBELN","EBELP","LOEKZ","EKORG","EKGRP","WEPOS","WEUNB",
+                            "BLCKD","REPOS","BLCKT","SAKTO","KOSTL","PRCTR","ANLN1","ANLN2","AUFNR","GSBER","KOKRS","GEBER","FIPOS","FKBER","FISTL","INFNR") VALUES`;
+                                const leng = dataItem.length
+                                for (let i in dataItem) {
+                                    dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
+                                    var stringValueChiden = '';
+                                    stringValueChiden = `('${dataItem[i].PR_NO}','${dataItem[i].PR_ITEM}','${dataItem[i].KNTTP}','${dataItem[i].PSTYP}','${dataItem[i].MATNR}','${dataItem[i].MATKL}','${dataItem[i].TXZ01}'
+                                    ,'${dataItem[i].WERKS}','${dataItem[i].LGORT}','${dataItem[i].LFDAT}','${dataItem[i].LIFNR}','${dataItem[i].MENGE}','${dataItem[i].MEINS}','${dataItem[i].PREIS}'
+                                    ,'${dataItem[i].WEARS}','${dataItem[i].PEINH}','${dataItem[i].GSWRT}','${dataItem[i].LOCAL_AMOUNT}','${dataItem[i].EBELN}','${dataItem[i].EBELP}','${dataItem[i].LOEKZ}'
+                                    ,'${dataItem[i].EKORG}','${dataItem[i].EKGRP}','${dataItem[i].WEPOS}','${dataItem[i].WEUNB}','${dataItem[i].BLCKD}','${dataItem[i].REPOS}','${dataItem[i].BLCKT}'
+                                    ,'${dataItem[i].SAKTO}','${dataItem[i].KOSTL}','${dataItem[i].PRCTR}','${dataItem[i].ANLN1}','${dataItem[i].ANLN2}','${dataItem[i].AUFNR}','${dataItem[i].GSBER}'
+                                    ,'${dataItem[i].KOKRS}','${dataItem[i].GEBER}','${dataItem[i].FIPOS}','${dataItem[i].FKBER}','${dataItem[i].FISTL}','${dataItem[i].INFNR}')`;
+                                    if (leng > Number(i) + 1) {
+                                        stringValueChiden += ','
+                                    }
+        
+                                    stringValue += stringValueChiden;
+                                }
+                                await db.query(`${stringValue};`);
+                            return res.status(201).json({data:rs.data,message:rs.message});
                         }
                     }else{
                         var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
@@ -317,6 +385,26 @@ let saveAndSubmit = async (req, res) => {
         }
 
     } catch (error) {
+        var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
+        "MENGE","MEINS","PREIS","WEARS","PEINH","GSWRT","LOCAL_AMOUNT","EBELN","EBELP","LOEKZ","EKORG","EKGRP","WEPOS","WEUNB",
+        "BLCKD","REPOS","BLCKT","SAKTO","KOSTL","PRCTR","ANLN1","ANLN2","AUFNR","GSBER","KOKRS","GEBER","FIPOS","FKBER","FISTL","INFNR") VALUES`;
+            const leng = dataItem.length
+            for (let i in dataItem) {
+                dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
+                var stringValueChiden = '';
+                stringValueChiden = `('${dataItem[i].PR_NO}','${dataItem[i].PR_ITEM}','${dataItem[i].KNTTP}','${dataItem[i].PSTYP}','${dataItem[i].MATNR}','${dataItem[i].MATKL}','${dataItem[i].TXZ01}'
+                ,'${dataItem[i].WERKS}','${dataItem[i].LGORT}','${dataItem[i].LFDAT}','${dataItem[i].LIFNR}','${dataItem[i].MENGE}','${dataItem[i].MEINS}','${dataItem[i].PREIS}'
+                ,'${dataItem[i].WEARS}','${dataItem[i].PEINH}','${dataItem[i].GSWRT}','${dataItem[i].LOCAL_AMOUNT}','${dataItem[i].EBELN}','${dataItem[i].EBELP}','${dataItem[i].LOEKZ}'
+                ,'${dataItem[i].EKORG}','${dataItem[i].EKGRP}','${dataItem[i].WEPOS}','${dataItem[i].WEUNB}','${dataItem[i].BLCKD}','${dataItem[i].REPOS}','${dataItem[i].BLCKT}'
+                ,'${dataItem[i].SAKTO}','${dataItem[i].KOSTL}','${dataItem[i].PRCTR}','${dataItem[i].ANLN1}','${dataItem[i].ANLN2}','${dataItem[i].AUFNR}','${dataItem[i].GSBER}'
+                ,'${dataItem[i].KOKRS}','${dataItem[i].GEBER}','${dataItem[i].FIPOS}','${dataItem[i].FKBER}','${dataItem[i].FISTL}','${dataItem[i].INFNR}')`;
+                if (leng > Number(i) + 1) {
+                    stringValueChiden += ','
+                }
+
+                stringValue += stringValueChiden;
+            }
+            await db.query(`${stringValue};`);
         return res.status(404).json({ message: error.message });
     }
 

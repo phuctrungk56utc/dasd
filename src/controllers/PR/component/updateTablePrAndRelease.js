@@ -31,7 +31,21 @@ let updateTablePrAndRelease = async (resultSap, req, dataCallSap,userId) => {
         }
         var release_ID = await db.query(`${stringRelease};`);
         if(release_ID.rows.length === 0){
-            return ({code:400,message:'not found Release_ID'});
+                        //no release to status comp
+                        var rs = await db.query(`UPDATE prm."PrTable"
+                        SET "PR_SAP"=${resultSap.HEADER.PR_SAP}, "DESCRIPTION"='${dataCallSap.HEADER.DESCRIPTION}', "changeBy"='${userId}',"STATUS"=5, 
+                        "StatusDescription"='Complete', "LOCAL_AMOUNT"=${resultSap.HEADER.LOCAL_AMOUNT}, 
+                        "WAERS"='${resultSap.HEADER.WAERS ? resultSap.HEADER.WAERS : ''}', "HWAERS"='${resultSap.HEADER.HWAERS ? resultSap.HEADER.HWAERS : ''}', 
+                        "changeAt"=now(), "Release_ID"=''
+                        WHERE "PR_NO"=${resultSap.HEADER.PR_NO} RETURNING "createBy", "changeAt", "STATUS";`);
+                    resultSap.HEADER.PR_TYPE = req.body.params.dataPR.HEADER.PR_TYPE;
+                    resultSap.HEADER.BUKRS = req.body.params.dataPR.HEADER.BUKRS;
+                    resultSap.HEADER.DESCRIPTION = req.body.params.dataPR.HEADER.DESCRIPTION;
+                    resultSap.HEADER.createBy = rs.rows[0].createBy;
+                    resultSap.HEADER.changeAt = rs.rows[0].changeAt;
+                    resultSap.HEADER.STATUS = rs.rows[0].STATUS;
+                    return ({code:400,data:resultSap,message:'not found Release_ID'});
+            // return ({code:400,message:'not found Release_ID'});
         }
         //update status draft to submit
         //have release 

@@ -19,6 +19,7 @@ const accessTokenSecretAccess = process.env.CIBER_PRM_JWT_ACCESS;
  */
 let isPrData = async (req, res, next) => {
     try {
+        const token = req.headers.authorization.split(' ')[1] ? req.headers.authorization.split(' ')[1] : req.headers.authorization;
         var userId = '';
         if (req.headers.authorization.split(' ')[1]) {
             const basicAuth = Buffer.from(token, 'base64').toString('ascii');
@@ -28,7 +29,7 @@ let isPrData = async (req, res, next) => {
             const decodeTk = decodeJWT(accessToken);
             userId = decodeTk.userId;
         }
-        const token = req.headers.authorization.split(' ')[1] ? req.headers.authorization.split(' ')[1] : req.headers.authorization;
+        
         var checkRole = null
         var roleApi = null
         var checkAuthoRole = false;
