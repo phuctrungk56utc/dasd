@@ -28,6 +28,8 @@ var hiddenItem = require("../controllers/hiddenItem");
 
 var PrType = require("../controllers/PrType");
 
+var PostPrType = require("../controllers/PostPrType");
+
 var PrTable = require("../controllers/PrTable");
 
 var PrTablePrApprove = require("../controllers/PrTablePrApprove");
@@ -40,6 +42,8 @@ var updateHiddenItem = require("../controllers/updateHiddenItem"); //master data
 var getAllMasterData = require("../controllers/masterdata/getAllMasterData");
 
 var postMasterData = require("../controllers/masterdata/postMasterData");
+
+var postMaterial = require("../controllers/masterdata/postMaterial");
 
 var getCompanyCode = require("../controllers/masterdata/getCompanyCode");
 
@@ -105,7 +109,10 @@ var uploadFiles = require("../controllers/PR/files/uploadFiles"); //get list fil
 var getListFile = require("../controllers/PR/files/getListFile"); //get getNotification
 
 
-var getNotification = require("../controllers/notification/getNotification"); //get listRelease
+var getNotification = require("../controllers/notification/getNotification"); //updateStatus notification
+
+
+var updateStatus = require("../controllers/notification/updateStatus"); //get listRelease
 
 
 var getListRelease = require("../controllers/moduleRelease/getListRelease"); //post postStrategy
@@ -114,13 +121,28 @@ var getListRelease = require("../controllers/moduleRelease/getListRelease"); //p
 var postStrategy = require("../controllers/moduleRelease/postStrategy"); //get getUser
 
 
-var getUser = require("../controllers/userManage/getAllUser"); //get role
+var getUser = require("../controllers/userManage/getAllUser"); //createUsers
 
 
-var getRole = require("../controllers/role/getRole"); //post role
+var createUsers = require("../controllers/userManage/createUsers"); //get role
 
 
-var postRole = require("../controllers/role/postRole");
+var getRole = require("../controllers/role/getRole"); //getUserRole
+
+
+var getUserRole = require("../controllers/role/getUserRole"); //post role
+
+
+var postRole = require("../controllers/role/postRole"); //postUserRole
+
+
+var postUserRole = require("../controllers/role/postUserRole"); //
+
+
+var getUserCompany = require("../controllers/userCompany/getUserCompany"); //
+
+
+var postUserCompany = require("../controllers/userCompany/postUserCompany");
 /**
  * Init all APIs on your application
  * @param {*} app from express
@@ -132,16 +154,21 @@ var initAPIs = function initAPIs(app) {
   router.post("/login", AuthController.login);
   router.post("/authLogin", AuthLoginMiddleware, AuthLogin.authLogin);
   router.post("/refresh-token", AuthController.refreshToken);
-  router.post("/auThRefresh", AuthRefreshMiddleware, AuthLogin.auThRefresh);
-  router.get("/hiddenItem", hiddenItem.hiddenItem);
-  router.get("/PrType", PrType.PrType); // router.get("/PrTable", PrTable.PrTable);
+  router.post("/auThRefresh", AuthRefreshMiddleware, AuthLogin.auThRefresh); // router.get("/PrTable", PrTable.PrTable);
   // Sử dụng authMiddleware.isAuth trước những api cần xác thực
 
-  router.use(isPrData.isPrData);
+  router.use(isPrData.isPrData); //Configuration
+
+  router.get("/hiddenItem", hiddenItem.hiddenItem);
+  router.get("/PrType", PrType.PrType);
+  router.post("/PostPrType", PostPrType.PostPrType);
+  router.post("/updateHiddenItem", updateHiddenItem.updateHiddenItem); //PR
+
   router.get("/PrTablePrApprove", PrTablePrApprove.PrTablePrApprove);
   router.get("/PrTable", PrTable.PrTable);
-  router.get("/PrItem", PrItem.PrItem);
-  router.post("/updateHiddenItem", updateHiddenItem.updateHiddenItem); //module Release
+  router.get("/PrItem", PrItem.PrItem); //dm đây là Approve detail
+
+  router.get("/ApproveDetail", getApproveDetail.getApproveDetail); //module Release
 
   router.get("/moduleTable", moduleTable.moduleTable);
   router.post("/moduleTable", postModuleRelease.postModuleRelease);
@@ -161,6 +188,7 @@ var initAPIs = function initAPIs(app) {
 
   router.get("/getMasterData", getAllMasterData.getAllMasterData);
   router.post("/postMasterData", postMasterData.postMasterData);
+  router.post("/postMaterial", postMaterial.postMaterial);
   router.get("/companyCode", getCompanyCode.companyCode);
   router.post("/CompanyCode", postCompanyCode.postCompanyCode);
   router.get("/Plant", Plant.Plant);
@@ -168,11 +196,9 @@ var initAPIs = function initAPIs(app) {
   router.get("/PurchasingGroup", PurchasingGroup.PurchasingGroup);
   router.post("/PurchasingGroup", postPurchasingGroup.postPurchasingGroup);
   router.get("/PurchasingOrg", PurchasingOrg.PurchasingOrg);
-  router.post("/PurchasingOrg", postPurchasingOrg.postPurchasingOrg); //dm đây là Approve detail
-
-  router.get("/ApproveDetail", getApproveDetail.getApproveDetail); //dm đây là  List Protect APIs:
-
-  router.get("/friends", FriendController.friendLists); // router.get("/example-protect-api", ExampleController.someAction);
+  router.post("/PurchasingOrg", postPurchasingOrg.postPurchasingOrg); //dm đây là  List Protect APIs:
+  // router.get("/friends", FriendController.friendLists);
+  // router.get("/example-protect-api", ExampleController.someAction);
   //dm đây là approvePr
 
   router.post("/approvePr", approvePr.approvePr); //dm đây là rejectPr
@@ -187,17 +213,29 @@ var initAPIs = function initAPIs(app) {
 
   router.get("/downloadFile", uploadFiles.downloadFile); //dm đây là  get getNotification
 
-  router.get("/getNotification", getNotification.getNotification); //dm đây là get list Release
+  router.get("/getNotification", getNotification.getNotification); //dm đây là  update status code notification
+
+  router.post("/updateStatus", updateStatus.updateStatus); //dm đây là get list Release
 
   router.get("/getListRelease", getListRelease.getListRelease); //dm đây là post postStrategy
 
   router.post("/postStrategy", postStrategy.postStrategy); //dm đây là get user
 
-  router.get("/getUsers", getUser.getUser); //get role
+  router.get("/getUsers", getUser.getUser); //createUsers
 
-  router.get("/getRole", getRole.getRole); //post role
+  router.post("/createUsers", createUsers.createUsers); //get role
 
-  router.post("/postRole", postRole.postRole);
+  router.get("/getRole", getRole.getRole); //getUserRole
+
+  router.get("/getUserRole", getUserRole.getUserRole); //post role
+
+  router.post("/postRole", postRole.postRole); //postUserRole 
+
+  router.post("/postUserRole", postUserRole.postUserRole); //
+
+  router.get("/getUserCompany", getUserCompany.getUserCompany); //
+
+  router.post("/postUserCompany", postUserCompany.postUserCompany);
   return app.use("/", router);
 }; // module.exports = {
 //   initAPIs: initAPIs,

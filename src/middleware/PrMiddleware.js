@@ -34,7 +34,7 @@ let isPrData = async (req, res, next) => {
         var roleApi = null
         var checkAuthoRole = false;
         var checkRun = false
-        if (req.originalUrl.split('?')[0] !== '/getNotification') {
+        if (req.originalUrl.split('?')[0] !== '/getNotification' && req.originalUrl.split('?')[0] !== '/updateStatus') {
             checkRun = true;
 
             checkRole = await db.query(`select t2."RoleType",t2."View",t2."Create/Edit/Delete",t2."Approve",t2."All" from prm."userRole" t1 inner join
@@ -51,9 +51,11 @@ let isPrData = async (req, res, next) => {
                 }
             } catch (error) {
                 return res.status(403).json({ message: 'You are not authorized to perform this action' });
+                // next();
             }
 
         }
+        // (checkAuthoRole && checkRun || (!checkRun))
         if (checkAuthoRole && checkRun || (!checkRun)) {
 
             if (req.headers.authorization.split(' ')[1]) {

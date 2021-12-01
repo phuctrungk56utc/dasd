@@ -21,11 +21,8 @@ const db = require("../db/db");
  * @param {*} req 
  * @param {*} res 
  */
- const user = {
-  date: 'yeu e'
-}
 let PrTable = async (req, res) => {
-  var start = new Date().getTime();
+  // var start = new Date().getTime();
   // var notification = socIo;
   // notification.ioObject.socketIo.to(notification.ioObject.listUSer[0].id).emit("sendDataServer",{user});
   try {
@@ -40,15 +37,23 @@ let PrTable = async (req, res) => {
           userId = decodeTk.userId.toUpperCase();
       }
     // await sleep.sleep(1);
+    const data = req.query.dataFromNoti;
+    var query;
+    if(data !== '' && data !== undefined && data !== null){
+      query = `SELECT * FROM prm."PrTable" WHERE "PR_NO"=${data};`
+    }else{
+      query = `SELECT * FROM prm."PrTable" WHERE "createBy"='${userId}'
+      ORDER BY "changeAt" DESC; `
+    }
+    
     // db.query(`SELECT * FROM prm."PrTable" INNER JOIN prm."PrItem" ON prm."PrTable"."PrNumber" = prm."PrItem"."PrNumber"`, (err, resp) => {
-    db.query(`SELECT * FROM prm."PrTable" WHERE "createBy"='${userId}'
-    ORDER BY "changeAt" DESC; `, (err, resp) => {
+    db.query(query, (err, resp) => {
         if (err) {
             return res.status(500).json({ database: err });
           } else {
-            var end = new Date().getTime();
-            var time = end - start;
-            console.log(time)
+            // var end = new Date().getTime();
+            // var time = end - start;
+            // console.log(time)
             
 
             return res.status(200).json({ item: resp.rows });

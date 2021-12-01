@@ -18,6 +18,7 @@ let apiSap = (url, params,method) => {
                         username: username,
                         password: password
                     },
+                    timeout: 3000,
                     headers: {
                         xsrfCookieName: 'XSRF-TOKEN',
                         xsrfHeaderName: 'X-XSRF-TOKEN',

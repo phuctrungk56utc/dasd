@@ -33,12 +33,8 @@ var db = require("../db/db"); // const socIo = require("../../server");
  */
 
 
-var user = {
-  date: 'yeu e'
-};
-
 var PrTable = function PrTable(req, res) {
-  var userId, token, basicAuth, accessToken, decodeTk;
+  var userId, token, basicAuth, accessToken, decodeTk, data, query;
   return regeneratorRuntime.async(function PrTable$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -55,36 +51,47 @@ var PrTable = function PrTable(req, res) {
             decodeTk = decodeJWT(accessToken);
             userId = decodeTk.userId.toUpperCase();
           } // await sleep.sleep(1);
-          // db.query(`SELECT * FROM prm."PrTable" INNER JOIN prm."PrItem" ON prm."PrTable"."PrNumber" = prm."PrItem"."PrNumber"`, (err, resp) => {
 
 
-          db.query("SELECT * FROM prm.\"PrTable\" WHERE \"createBy\"='".concat(userId, "'\n    ORDER BY \"changeAt\" DESC; "), function (err, resp) {
+          data = req.query.dataFromNoti;
+
+          if (data !== '' && data !== undefined && data !== null) {
+            query = "SELECT * FROM prm.\"PrTable\" WHERE \"PR_NO\"=".concat(data, ";");
+          } else {
+            query = "SELECT * FROM prm.\"PrTable\" WHERE \"createBy\"='".concat(userId, "'\n      ORDER BY \"changeAt\" DESC; ");
+          } // db.query(`SELECT * FROM prm."PrTable" INNER JOIN prm."PrItem" ON prm."PrTable"."PrNumber" = prm."PrItem"."PrNumber"`, (err, resp) => {
+
+
+          db.query(query, function (err, resp) {
             if (err) {
               return res.status(500).json({
                 database: err
               });
             } else {
+              // var end = new Date().getTime();
+              // var time = end - start;
+              // console.log(time)
               return res.status(200).json({
                 item: resp.rows
               });
             }
           });
-          _context.next = 9;
+          _context.next = 11;
           break;
 
-        case 6:
-          _context.prev = 6;
+        case 8:
+          _context.prev = 8;
           _context.t0 = _context["catch"](0);
           return _context.abrupt("return", res.status(500).json({
             database: _context.t0
           }));
 
-        case 9:
+        case 11:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[0, 6]]);
+  }, null, null, [[0, 8]]);
 };
 
 module.exports = {

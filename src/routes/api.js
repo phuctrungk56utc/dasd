@@ -15,6 +15,8 @@ const isPrData = require("../middleware/PrMiddleware");
 const AuthLogin = require("../controllers/AuthLogin");
 const hiddenItem = require("../controllers/hiddenItem");
 const PrType = require("../controllers/PrType");
+const PostPrType = require("../controllers/PostPrType");
+
 const PrTable = require("../controllers/PrTable");
 const PrTablePrApprove = require("../controllers/PrTablePrApprove");
 const PrItem = require("../controllers/PrItem");
@@ -80,7 +82,12 @@ const getRole = require("../controllers/role/getRole");
 const getUserRole = require("../controllers/role/getUserRole");
 //post role
 const postRole = require("../controllers/role/postRole");
-
+//postUserRole
+const postUserRole = require("../controllers/role/postUserRole");
+//
+const getUserCompany = require("../controllers/userCompany/getUserCompany");
+//
+const postUserCompany = require("../controllers/userCompany/postUserCompany");
 
 /**
  * Init all APIs on your application
@@ -100,6 +107,8 @@ let initAPIs = (app) => {
   //Configuration
   router.get("/hiddenItem", hiddenItem.hiddenItem);
   router.get("/PrType", PrType.PrType);
+  router.post("/PostPrType", PostPrType.PostPrType);
+
   router.post("/updateHiddenItem", updateHiddenItem.updateHiddenItem);
   
   //PR
@@ -174,6 +183,12 @@ let initAPIs = (app) => {
   router.get("/getUserRole", getUserRole.getUserRole);
   //post role
   router.post("/postRole", postRole.postRole);
+  //postUserRole 
+  router.post("/postUserRole", postUserRole.postUserRole);
+  //
+  router.get("/getUserCompany", getUserCompany.getUserCompany);
+  //
+  router.post("/postUserCompany", postUserCompany.postUserCompany);
   return app.use("/", router);
 }
 // module.exports = {

@@ -114,7 +114,7 @@ let saveAndSubmit = async (req, res) => {
                                     stringValue += stringValueChiden;
                                 }
                                 await db.query(`${stringValue};`);
-                                return res.status(200).json({data:data.data});
+                                return res.status(200).json({data:data.data[0]});
                             }else{
                                 await db.query(`DELETE FROM prm."PrItem"
                                 WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
@@ -293,7 +293,7 @@ let saveAndSubmit = async (req, res) => {
                             for (let i in dataItem) {
                                 // dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
                                 var stringValueChiden = '';
-                                stringValueChiden = `('${rs.data.data.ITEM[i].PR_NO}','${rs.data.ITEM[i].PR_ITEM}','${rs.data.ITEM[i].KNTTP}','${rs.data.ITEM[i].PSTYP}','${rs.data.ITEM[i].MATNR}','${rs.data.ITEM[i].MATKL}','${rs.data.ITEM[i].TXZ01}'
+                                stringValueChiden = `('${rs.data.ITEM[i].PR_NO}','${rs.data.ITEM[i].PR_ITEM}','${rs.data.ITEM[i].KNTTP}','${rs.data.ITEM[i].PSTYP}','${rs.data.ITEM[i].MATNR}','${rs.data.ITEM[i].MATKL}','${rs.data.ITEM[i].TXZ01}'
                                 ,'${rs.data.ITEM[i].WERKS}','${rs.data.ITEM[i].LGORT}','${rs.data.ITEM[i].LFDAT}','${rs.data.ITEM[i].LIFNR}','${rs.data.ITEM[i].MENGE}','${rs.data.ITEM[i].MEINS}','${rs.data.ITEM[i].PREIS}'
                                 ,'${rs.data.ITEM[i].WEARS}','${rs.data.ITEM[i].PEINH}','${rs.data.ITEM[i].GSWRT}','${rs.data.ITEM[i].LOCAL_AMOUNT}','${rs.data.ITEM[i].EBELN}','${rs.data.ITEM[i].EBELP}','${rs.data.ITEM[i].LOEKZ}'
                                 ,'${rs.data.ITEM[i].EKORG}','${rs.data.ITEM[i].EKGRP}','${rs.data.ITEM[i].WEPOS}','${rs.data.ITEM[i].WEUNB}','${rs.data.ITEM[i].BLCKD}','${rs.data.ITEM[i].REPOS}','${rs.data.ITEM[i].BLCKT}'
@@ -307,7 +307,7 @@ let saveAndSubmit = async (req, res) => {
                             }
                             await db.query(`${stringValue};`);
                             // data.data.HEADER.PR_TYPE = dataCallSap.HEADER.PR_TYPE;
-                            return res.status(200).json({data:data.data});
+                            return res.status(200).json({data:data.data[0]});
                         }else{
                             await db.query(`DELETE FROM prm."PrItem"
                             WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
