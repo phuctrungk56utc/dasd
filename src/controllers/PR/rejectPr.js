@@ -69,10 +69,21 @@ let rejectPr = async (req, res) => {
 			//Update table HISTORY
 			// await db.query(``);
 			//push notification
+			var today = new Date();
 			try {
 				for (let index in notification.ioObject.listUSer) {
 					if (notification.ioObject.listUSer[index].userId.toUpperCase() === getPrSapSelect.rows[0].changeBy.toUpperCase()) {
-						notification.ioObject.socketIo.to(notification.ioObject.listUSer[index].id).emit("sendDataServer", { CODE: 4, TYPE: 'PR', DESCRIPTION: 'RejectPR' });
+						notification.ioObject.socketIo.to(notification.ioObject.listUSer[index].id).emit("sendDataServer", { 
+							Content:null,
+							createAt:today,
+							changeAt:today,
+							forUserId:getPrSapSelect.rows[0].changeBy.toUpperCase(),
+							FromUserId:userId,
+							NotiType:4,
+							NotiTypeDescription:'Reject your PR',
+							PR_NO:req.body.params.PR_NO,
+							StatusCode:'',
+							StatusDescription:'pending'});
 					}
 				}
 				//insert to table notification

@@ -97,9 +97,11 @@ let approvePr = async (req, res) => {
 			userId = decodeTk.userId.toUpperCase();
 		}
 		// Get the size of an object
-		var size = Object.size(req.query);
+		var sizeQuery = Object.size(req.query);
+		var sizeBody = Object.size(req.body);
+		const PR_NO_VALUE  = req.body.params ? req.body.params.PR_NO : req.body.PR_NO;
 		var query;
-		if (size > 0) {
+		if (sizeQuery > 0 || sizeBody > 0) {
 			query = `SELECT * FROM prm."PR_RELEASE_STRATEGY" 
         WHERE "${Object.keys(req.query)[0]}"=${String(req.query[Object.keys(req.query)[0]])};`
 		} else {
@@ -107,7 +109,7 @@ let approvePr = async (req, res) => {
 		}
 		// get and check author for PR approve
 		const author = await db.query(`select * from prm."PR_RELEASE_STRATEGY" WHERE
-					 "PR_NO"=${req.body.params.PR_NO} `);
+					 "PR_NO"=${PR_NO_VALUE} `);
 		var RELEASE_LEVEL = null;
 		for (let index in author.rows) {
 			if (author.rows[index].userId === String(userId).toUpperCase()) {
@@ -115,7 +117,7 @@ let approvePr = async (req, res) => {
 			}
 		}
 		var checkAuthorValue = true;
-		const userRQ = await db.query(`select "createBy" from prm."PrTable" where "PR_NO"=${req.body.params.PR_NO}`);
+		const userRQ = await db.query(`select "createBy" from prm."PrTable" where "PR_NO"=${PR_NO_VALUE}`);
 		for (let index = author.rows.length - 1; index >= 0; index--) {
 			// if (RELEASE_LEVEL === 1 && author.rows[index].ACTION_CODE === 0) {
 			// 	checkAuthorValue = true;
@@ -128,11 +130,11 @@ let approvePr = async (req, res) => {
 				checkAuthorValue = false;
 				await db.query(`UPDATE prm."PrTable"
 				SET "STATUS"=3, "StatusDescription"='In process'
-				WHERE "PR_NO"='${req.body.params.PR_NO}';`);
+				WHERE "PR_NO"='${PR_NO_VALUE}';`);
 				// for table STRATEGY
 				await db.query(`UPDATE prm."PR_RELEASE_STRATEGY"
 				SET "ACTION_CODE"=1, "ACTION_DESCRIPTION"='Approve', "changeAt"='now()'
-				WHERE "PR_NO"=${req.body.params.PR_NO} AND "userId"='${userId.toUpperCase()}';`);
+				WHERE "PR_NO"=${PR_NO_VALUE} AND "userId"='${userId.toUpperCase()}';`);
 
 				//check and push notification
 				var checkPushNotification = true;
@@ -148,25 +150,46 @@ let approvePr = async (req, res) => {
 							"forUserId","FromUserId","PR_NO",  "StatusCode", "StatusDescription", "createAt", "changeAt", "NotiTypeDescription", "NotiType")
 							VALUES`;
 						var checkInsertNotification = 1;
+						var today = new Date();
 						for (let j in author.rows) {
 							if (author.rows[j].RELEASE_LEVEL === RELEASE_LEVEL + 1) {
 								for (let i in notification.ioObject.listUSer) {
 									//notification for next approver
 									if (notification.ioObject.listUSer[i].userId.toUpperCase() === author.rows[j].userId.toUpperCase()) {
-										notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", { CODE: 0, TYPE: 'PR', DESCRIPTION: 'REQUIRED APPROVE' });
+										notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", { 
+											Content:null,
+											createAt:today,
+											changeAt:today,
+											forUserId:author.rows[j].userId.toUpperCase(),
+											FromUserId:userRQ.rows[0].createBy.toUpperCase(),
+											NotiType:3,
+											NotiTypeDescription:'Approve Request',
+											PR_NO:PR_NO_VALUE,
+											StatusCode:'',
+											StatusDescription:'pending'});
 									}
 									//notification for requester
 									if (notification.ioObject.listUSer[i].userId.toUpperCase() === userRQ.rows[0].createBy.toUpperCase()) {
-										notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", { CODE: 0, TYPE: 'PR', DESCRIPTION: 'REQUIRED APPROVE' });
+										notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", { 
+											Content:null,
+											createAt:today,
+											changeAt:today,
+											forUserId:userRQ.rows[0].createBy.toUpperCase(),
+											FromUserId:userId,
+											NotiType:3,
+											NotiTypeDescription:'Approve Request',
+											PR_NO:PR_NO_VALUE,
+											StatusCode:'',
+											StatusDescription:'pending'});
 									}
 								}
 
 								//string for insert table notification
 								var stringValueChiden = '';
 								if (checkInsertNotification === 1) {
-									stringValueChiden = `('${author.rows[j].userId.toUpperCase()}','${userId}',${req.body.params.PR_NO}, '', 'pending', 'now()', 'now()', 'Approve Request', 3)`;
+									stringValueChiden = `('${author.rows[j].userId.toUpperCase()}','${userId}',${PR_NO_VALUE}, '', 'pending', 'now()', 'now()', 'Approve Request', 3)`;
 								} else {
-									stringValueChiden = `,('${author.rows[j].userId.toUpperCase()}','${userId}',${req.body.params.PR_NO}, '', 'pending', 'now()', 'now()', 'Approve Request', 3)`;
+									stringValueChiden = `,('${author.rows[j].userId.toUpperCase()}','${userId}',${PR_NO_VALUE}, '', 'pending', 'now()', 'now()', 'Approve Request', 3)`;
 								}
 								stringValue += stringValueChiden;
 								checkInsertNotification += 1;
@@ -175,7 +198,7 @@ let approvePr = async (req, res) => {
 						}
 						//insert to table notification
 						if(checkInsertNotification > 1){
-							stringValue += `,('${userRQ.rows[0].createBy.toUpperCase()}','${userId}',${req.body.params.PR_NO}, '', 'pending', 'now()', 'now()', 'Approve your PR', 3)`;
+							stringValue += `,('${userRQ.rows[0].createBy.toUpperCase()}','${userId}',${PR_NO_VALUE}, '', 'pending', 'now()', 'now()', 'Approve your PR', 3)`;
 							await db.query(`${stringValue}`);
 						}
 						
@@ -189,7 +212,7 @@ let approvePr = async (req, res) => {
 		}
 		//approve for complete
 		if (checkAuthorValue) {
-			var getPrSapSelect = await db.query(`select "PR_SAP" from prm."PrTable" WHERE "PR_NO" = ${req.body.params.PR_NO}`);
+			var getPrSapSelect = await db.query(`select "PR_SAP" from prm."PrTable" WHERE "PR_NO" = ${PR_NO_VALUE}`);
 			var PrSapRsData = {
 				"PR_SAP": getPrSapSelect.rows[0].PR_SAP,
 				"REL_CODE": "T1",
@@ -224,25 +247,38 @@ let approvePr = async (req, res) => {
 				//for table PR
 				await db.query(`UPDATE prm."PrTable"
 				SET "STATUS"=5, "StatusDescription"='Complete'
-				WHERE "PR_NO"='${req.body.params.PR_NO}';`);
+				WHERE "PR_NO"='${PR_NO_VALUE}';`);
 				// for table STRATEGY
 				await db.query(`UPDATE prm."PR_RELEASE_STRATEGY"
 				SET "ACTION_CODE"=1, "ACTION_DESCRIPTION"='Approve', "changeAt"='now()'
-				WHERE "PR_NO"=${req.body.params.PR_NO} AND "userId"='${userId.toUpperCase()}';`);
+				WHERE "PR_NO"=${PR_NO_VALUE} AND "userId"='${userId.toUpperCase()}';`);
 				//Update table HISTORY
 				// await db.query(``);
 				//push notification
-				// const userRQ = await db.query(`select "createBy" from prm."PrTable" where "PR_NO"=${req.body.params.PR_NO}`);
+				// const userRQ = await db.query(`select "createBy" from prm."PrTable" where "PR_NO"=${PR_NO_VALUE}`);
+				var today = new Date();
 				for (let i in notification.ioObject.listUSer) {
 					if (notification.ioObject.listUSer[i].userId.toUpperCase() === userRQ.rows[0].createBy.toUpperCase()) {
-						notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", { CODE: 0, TYPE: 'PR', DESCRIPTION: 'REQUIRED APPROVE' });
+						notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", { 
+							Content:null,
+							createAt:today,
+							changeAt:today,
+							forUserId:userRQ.rows[0].createBy.toUpperCase(),
+							FromUserId:userId,
+							NotiType:5,
+							NotiTypeDescription:'Approve complete',
+							PR_NO:PR_NO_VALUE,
+							StatusCode:'',
+							StatusDescription:'pending'});
 					}
 				}
 				//insert to table notification
 				await db.query(`INSERT INTO prm."Notification"(
 					"forUserId","FromUserId","PR_NO", "StatusCode", "StatusDescription", "createAt", "changeAt", "NotiTypeDescription", "NotiType")
-					VALUES ('${userRQ.rows[0].createBy.toUpperCase()}','${userId}',${req.body.params.PR_NO}, '', 'pending', 'now()', 'now()', 'Approve complete', 5);`);
+					VALUES ('${userRQ.rows[0].createBy.toUpperCase()}','${userId}',${PR_NO_VALUE}, '', 'pending', 'now()', 'now()', 'Approve complete', 5);`);
 				return res.status(200).json({ message: 'Success', code: 5 });
+			}else{
+				return res.status(200).json({ message: 'Success', data: data.data.MESSAGE });
 			}
 		} else {
 			return res.status(200).json({ message: 'Success', code: 3 });

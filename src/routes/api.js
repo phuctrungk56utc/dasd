@@ -59,6 +59,10 @@ const saveAndSubmit = require("../controllers/PR/saveAndSubmit");
 const updatePrSubmit = require("../controllers/PR/updatePrSubmit");
 //delete Pr
 const deletePr = require("../controllers/PR/deletePr");
+
+//copyPr
+const copyPr = require("../controllers/PR/copyPr");
+
 //upload File
 const uploadFiles = require("../controllers/PR/files/uploadFiles");
 //get list file upload
@@ -159,6 +163,8 @@ let initAPIs = (app) => {
   router.post("/rejectPr", rejectPr.rejectPr);
   //dm đây là delete PR
   router.post("/deletePr", deletePr.deletePr);
+  //dm đây là copy PR
+  router.post("/copyPr", copyPr.copyPr);
   //dm đây là upload File
   router.post("/uploadFiles", uploadFiles.upload.array('myFile', 10), uploadFiles.uploadFiles);
   //dm đây là  get list file upload

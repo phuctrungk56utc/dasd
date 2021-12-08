@@ -93,11 +93,22 @@ let updateTablePrAndRelease = async (resultSap, req, dataCallSap,userId) => {
             var checkInsertNotification = 1;
             for (let index in userRl.rows) {
                 //push notification
+                var today = new Date();
                 try {
                     if (Number(userRl.rows[index].Release_Level) === 1) {
                         for (let i in notification.ioObject.listUSer) {
                             if (notification.ioObject.listUSer[i].userId.toUpperCase() === userRl.rows[index].userId.toUpperCase()) {
-                                notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", { CODE: 0, TYPE: 'PR', DESCRIPTION: 'REQUIRED APPROVE' });
+                                notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", { 
+                                    Content:null,
+                                    createAt:today,
+                                    changeAt:today,
+                                    forUserId:userRl.rows[index].userId.toUpperCase(),
+                                    FromUserId:userId,
+                                    NotiType:3,
+                                    NotiTypeDescription:'Approve Request',
+                                    PR_NO:resultSap.HEADER.PR_NO,
+                                    StatusCode:'',
+                                    StatusDescription:'pending'});
                             }
                         }
                         //string for insert table notification

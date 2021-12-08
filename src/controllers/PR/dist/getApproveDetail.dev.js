@@ -22,8 +22,7 @@ var axios = require('axios');
 
 
 var getApproveDetail = function getApproveDetail(req, res) {
-  var userId, token, basicAuth, accessToken, decodeTk, size, query, author, RELEASE_LEVEL, index, checkAuthorValue, _index;
-
+  var userId, token, basicAuth, accessToken, decodeTk, size, query, author, checkAuthorValue, index, j;
   return regeneratorRuntime.async(function getApproveDetail$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -58,58 +57,66 @@ var getApproveDetail = function getApproveDetail(req, res) {
           size = Object.size(req.query);
 
           if (size > 0) {
-            query = "SELECT * FROM prm.\"PR_RELEASE_STRATEGY\" \n        WHERE \"".concat(Object.keys(req.query)[0], "\"=").concat(String(req.query[Object.keys(req.query)[0]]), ";");
+            query = "SELECT * FROM prm.\"PR_RELEASE_STRATEGY\" \n        WHERE \"".concat(Object.keys(req.query)[0], "\"=").concat(String(req.query[Object.keys(req.query)[0]]), " ORDER BY \"RELEASE_LEVEL\" ASC ;");
           } else {
-            query = "SELECT * FROM prm.\"PR_RELEASE_STRATEGY\" ;";
+            query = "SELECT * FROM prm.\"PR_RELEASE_STRATEGY\"  ORDER BY \"RELEASE_LEVEL\" ASC ;";
           } // get and check author for PR approve
 
 
           _context.next = 8;
-          return regeneratorRuntime.awrap(db.query("select * from prm.\"PR_RELEASE_STRATEGY\" WHERE\n\t\t\t\t\t \"PR_NO\"=".concat(String(req.query[Object.keys(req.query)[0]]), " ")));
+          return regeneratorRuntime.awrap(db.query("select * from prm.\"PR_RELEASE_STRATEGY\" WHERE\n\t\t\t\t\t \"PR_NO\"=".concat(String(req.query[Object.keys(req.query)[0]]), "  ORDER BY \"RELEASE_LEVEL\" ASC ;")));
 
         case 8:
           author = _context.sent;
-          RELEASE_LEVEL = 1;
-
-          for (index in author.rows) {
-            if (author.rows[index].userId === String(userId).toUpperCase()) {
-              RELEASE_LEVEL = author.rows[index].RELEASE_LEVEL;
-            }
-          }
-
-          checkAuthorValue = true;
+          // var RELEASE_LEVEL = 1;
+          // for (let index in author.rows) {
+          // 	if (author.rows[index].userId === String(userId).toUpperCase()) {
+          // 		RELEASE_LEVEL = author.rows[index].RELEASE_LEVEL;
+          // 	}
+          // }
+          checkAuthorValue = false;
           _context.t0 = regeneratorRuntime.keys(author.rows);
 
-        case 13:
+        case 11:
           if ((_context.t1 = _context.t0()).done) {
-            _context.next = 23;
+            _context.next = 24;
             break;
           }
 
-          _index = _context.t1.value;
+          index = _context.t1.value;
 
-          if (!(RELEASE_LEVEL === 1 && author.rows[_index].ACTION_CODE === 0)) {
-            _context.next = 18;
+          if (!(userId === author.rows[index].userId && author.rows[index].ACTION_CODE === 0)) {
+            _context.next = 22;
+            break;
+          }
+
+          _context.t2 = regeneratorRuntime.keys(author.rows);
+
+        case 15:
+          if ((_context.t3 = _context.t2()).done) {
+            _context.next = 22;
+            break;
+          }
+
+          j = _context.t3.value;
+
+          if (!(author.rows[index].RELEASE_LEVEL === 1 && author.rows[index].ACTION_CODE === 0 || author.rows[index].RELEASE_LEVEL > author.rows[j].RELEASE_LEVEL && author.rows[j].ACTION_CODE === 1)) {
+            _context.next = 20;
             break;
           }
 
           checkAuthorValue = true;
-          return _context.abrupt("break", 23);
+          return _context.abrupt("break", 22);
 
-        case 18:
-          if (!(author.rows[_index].RELEASE_LEVEL < RELEASE_LEVEL && author.rows[_index].ACTION_CODE !== 1)) {
-            _context.next = 21;
-            break;
-          }
-
-          checkAuthorValue = false;
-          return _context.abrupt("break", 23);
-
-        case 21:
-          _context.next = 13;
+        case 20:
+          _context.next = 15;
           break;
 
-        case 23:
+        case 22:
+          _context.next = 11;
+          break;
+
+        case 24:
           db.query(query, function (err, resp) {
             if (err) {
               return res.status(404).json({
@@ -122,22 +129,22 @@ var getApproveDetail = function getApproveDetail(req, res) {
               });
             }
           });
-          _context.next = 29;
+          _context.next = 30;
           break;
 
-        case 26:
-          _context.prev = 26;
-          _context.t2 = _context["catch"](0);
+        case 27:
+          _context.prev = 27;
+          _context.t4 = _context["catch"](0);
           return _context.abrupt("return", res.status(404).json({
-            message: _context.t2.message
+            message: _context.t4.message
           }));
 
-        case 29:
+        case 30:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[0, 26]]);
+  }, null, null, [[0, 27]]);
 };
 
 module.exports = {

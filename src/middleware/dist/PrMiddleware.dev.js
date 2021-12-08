@@ -98,7 +98,7 @@ var isPrData = function isPrData(req, res, next) {
           _context.prev = 27;
           _context.t2 = _context["catch"](16);
           return _context.abrupt("return", res.status(403).json({
-            message: 'You are not authorized to perform this action'
+            message: 'File do not exits'
           }));
 
         case 30:

@@ -50,7 +50,7 @@ let isPrData = async (req, res, next) => {
                     }
                 }
             } catch (error) {
-                return res.status(403).json({ message: 'You are not authorized to perform this action' });
+                return res.status(403).json({ message: 'File do not exits' });
                 // next();
             }
 

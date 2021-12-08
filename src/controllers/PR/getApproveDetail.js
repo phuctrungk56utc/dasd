@@ -45,22 +45,30 @@ let getApproveDetail = async (req, res) => {
 		// get and check author for PR approve
 		const author = await db.query(`select * from prm."PR_RELEASE_STRATEGY" WHERE
 					 "PR_NO"=${String(req.query[Object.keys(req.query)[0]])}  ORDER BY "RELEASE_LEVEL" ASC ;`);
-		var RELEASE_LEVEL = 1;
-		for (let index in author.rows) {
-			if (author.rows[index].userId === String(userId).toUpperCase()) {
-				RELEASE_LEVEL = author.rows[index].RELEASE_LEVEL;
-			}
-		}
-		var checkAuthorValue = true;
+		// var RELEASE_LEVEL = 1;
+		// for (let index in author.rows) {
+		// 	if (author.rows[index].userId === String(userId).toUpperCase()) {
+		// 		RELEASE_LEVEL = author.rows[index].RELEASE_LEVEL;
+		// 	}
+		// }
+		var checkAuthorValue = false;
 			for (let index in author.rows) {
-				if (RELEASE_LEVEL === 1 && author.rows[index].ACTION_CODE === 0) {
-					checkAuthorValue = true;
-					break;
+				// if (RELEASE_LEVEL === 1 && author.rows[index].ACTION_CODE === 0) {
+				// 	checkAuthorValue = true;
+				// 	break;
+				// }
+				if(userId === author.rows[index].userId && author.rows[index].ACTION_CODE === 0){
+					for (let j in author.rows) {
+						if((author.rows[index].RELEASE_LEVEL === 1 && author.rows[index].ACTION_CODE === 0) || (author.rows[index].RELEASE_LEVEL > author.rows[j].RELEASE_LEVEL && author.rows[j].ACTION_CODE === 1)){
+							checkAuthorValue = true;
+							break;
+						}
+					}
 				}
-				if (author.rows[index].RELEASE_LEVEL < RELEASE_LEVEL && author.rows[index].ACTION_CODE !== 1) {
-					checkAuthorValue = false;
-					break;
-				}
+				// if (author.rows[index].RELEASE_LEVEL < RELEASE_LEVEL && author.rows[index].ACTION_CODE !== 1) {
+				// 	checkAuthorValue = false;
+				// 	break;
+				// }
 			}
 		
 

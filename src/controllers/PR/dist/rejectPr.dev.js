@@ -26,7 +26,7 @@ var apiSap = require("../../apiSap/apiSap");
 
 
 var rejectPr = function rejectPr(req, res) {
-  var userId, notification, token, basicAuth, accessToken, decodeTk, username, password, getPrSapSelect, PrSapRsData, data, index;
+  var userId, notification, token, basicAuth, accessToken, decodeTk, username, password, getPrSapSelect, PrSapRsData, data, today, index;
   return regeneratorRuntime.async(function rejectPr$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -83,7 +83,7 @@ var rejectPr = function rejectPr(req, res) {
           data = _context.sent;
 
           if (!(data.data.TYPE === 'S')) {
-            _context.next = 30;
+            _context.next = 31;
             break;
           }
 
@@ -95,58 +95,69 @@ var rejectPr = function rejectPr(req, res) {
           return regeneratorRuntime.awrap(db.query("UPDATE prm.\"PR_RELEASE_STRATEGY\"\n\t\t\tSET \"ACTION_CODE\"=2, \"ACTION_DESCRIPTION\"='Reject', \"changeAt\"='now()'\n\t\t\tWHERE \"PR_NO\"=".concat(req.body.params.PR_NO, " AND \"userId\"='").concat(userId.toUpperCase(), "';")));
 
         case 18:
-          _context.prev = 18;
+          //Update table HISTORY
+          // await db.query(``);
+          //push notification
+          today = new Date();
+          _context.prev = 19;
 
           for (index in notification.ioObject.listUSer) {
             if (notification.ioObject.listUSer[index].userId.toUpperCase() === getPrSapSelect.rows[0].changeBy.toUpperCase()) {
               notification.ioObject.socketIo.to(notification.ioObject.listUSer[index].id).emit("sendDataServer", {
-                CODE: 4,
-                TYPE: 'PR',
-                DESCRIPTION: 'RejectPR'
+                Content: null,
+                createAt: today,
+                changeAt: today,
+                forUserId: getPrSapSelect.rows[0].changeBy.toUpperCase(),
+                FromUserId: userId,
+                NotiType: 4,
+                NotiTypeDescription: 'Reject your PR',
+                PR_NO: req.body.params.PR_NO,
+                StatusCode: '',
+                StatusDescription: 'pending'
               });
             }
           } //insert to table notification
 
 
-          _context.next = 22;
+          _context.next = 23;
           return regeneratorRuntime.awrap(db.query("INSERT INTO prm.\"Notification\"(\n\t\t\t\t\"forUserId\",\"FromUserId\",\"PR_NO\", \"StatusCode\", \"StatusDescription\", \"createAt\", \"changeAt\", \"NotiTypeDescription\", \"NotiType\")\n\t\t\t\tVALUES ('".concat(getPrSapSelect.rows[0].changeBy.toUpperCase(), "','").concat(userId, "',").concat(req.body.params.PR_NO, ", '', 'pending', 'now()', 'now()', 'Reject your PR', 4);")));
 
-        case 22:
-          _context.next = 27;
+        case 23:
+          _context.next = 28;
           break;
 
-        case 24:
-          _context.prev = 24;
-          _context.t0 = _context["catch"](18);
+        case 25:
+          _context.prev = 25;
+          _context.t0 = _context["catch"](19);
           console.log(_context.t0);
 
-        case 27:
+        case 28:
           return _context.abrupt("return", res.status(200).json({
             message: 'Success'
           }));
 
-        case 30:
+        case 31:
           return _context.abrupt("return", res.status(404).json({
             message: 'Có lỗi gì đó!'
           }));
 
-        case 31:
-          _context.next = 36;
+        case 32:
+          _context.next = 37;
           break;
 
-        case 33:
-          _context.prev = 33;
+        case 34:
+          _context.prev = 34;
           _context.t1 = _context["catch"](0);
           return _context.abrupt("return", res.status(404).json({
             message: err.message
           }));
 
-        case 36:
+        case 37:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[0, 33], [18, 24]]);
+  }, null, null, [[0, 34], [19, 25]]);
 };
 
 module.exports = {

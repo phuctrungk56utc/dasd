@@ -256,6 +256,7 @@ socketIo.on("connection", (socket) => { ///Handle khi có connect từ client t�
     // socketIo.to(socket.id).emit("sendDataServer", { user });// phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
   })
   socket.on("disconnect", () => {
+    console.log("Client disconnected: " + socket.id); // Khi client disconnect thì log ra terminal.
     for(var i = 0; i < listUSer.length; i++) {
       if(listUSer[i].id == socket.id) {
         listUSer.splice(i, 1);
@@ -269,6 +270,36 @@ socketIo.on("connection", (socket) => { ///Handle khi có connect từ client t�
     // console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
   });
 });
+////////////////////
+// Node.js
+
+// var admin = require("firebase-admin");
+
+// var serviceAccount = require("./ciberprm-firebase-admin.json");
+
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount)
+// });
+// const registrationTokens = 'AAAAODuKmmQ:APA91bFyfubFmoGlazPFYwnBaYrjO-Wda9ZRl3EE0_LT8uPdjDPmgVafBA2a8h4rRIZtP-zMFIprf_Y-ihUqUCOomXERR2f8UurVFQT4UPBJ4Fh8i0JxecHPNVF_kyCC7l4nullOFs1V'
+// // var message = {
+// //   notification: { title: 'Super title', body: 'this is a test' },
+// //   token: 'AAAAUPP-8Sc:APA91bEaaCzGhb4ZBGF2VYof-COBvRowPjFcXv3hwh18p4j-BSNPBAM9v3g88G4Z4gCf3NEWqZY70wqJ-D5r6Hzx4VronkrAbeCi90UwwdJOTbIkFF1_ulYGQHSS-oQ0MzpkWdBqAiSN'
+// // };
+// const message = {
+//   "to": "fB9YIc2rRuCW0Gm24Wvf-C:APA91bHoPcBW3LM2AjlV4S_CwWL03WT1DlB0av40XChMK_qiUj9deU4EtMXAUuezJZUqLY2h9PP4vDyn2eU9mYaJ5F4a0Cj5U_2uFlbA73dTBEaYpLMRiSXJFoQ9-n8fUPDiayzNSoOY",
+//   data: {score: '850', time: '2:45'},
+//   token: registrationTokens,
+// };
+// admin.messaging().send(message)
+// .then((response) => {
+//   // Response is a message ID string.
+//   console.log(response)
+// })
+// .catch((error) => {
+//   //return error
+//   console.log(error)
+// });
+
 
 // module.exports.lisUser = listUSer;
 // chọn một port mà bạn muốn và sử dụng để chạy ứng dụng tại local

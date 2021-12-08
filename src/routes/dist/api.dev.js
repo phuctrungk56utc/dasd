@@ -100,7 +100,10 @@ var saveAndSubmit = require("../controllers/PR/saveAndSubmit"); //Update Pr Subm
 var updatePrSubmit = require("../controllers/PR/updatePrSubmit"); //delete Pr
 
 
-var deletePr = require("../controllers/PR/deletePr"); //upload File
+var deletePr = require("../controllers/PR/deletePr"); //copyPr
+
+
+var copyPr = require("../controllers/PR/copyPr"); //upload File
 
 
 var uploadFiles = require("../controllers/PR/files/uploadFiles"); //get list file upload
@@ -205,7 +208,9 @@ var initAPIs = function initAPIs(app) {
 
   router.post("/rejectPr", rejectPr.rejectPr); //dm đây là delete PR
 
-  router.post("/deletePr", deletePr.deletePr); //dm đây là upload File
+  router.post("/deletePr", deletePr.deletePr); //dm đây là copy PR
+
+  router.post("/copyPr", copyPr.copyPr); //dm đây là upload File
 
   router.post("/uploadFiles", uploadFiles.upload.array('myFile', 10), uploadFiles.uploadFiles); //dm đây là  get list file upload
 

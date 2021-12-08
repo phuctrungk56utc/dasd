@@ -101,12 +101,12 @@ let saveAndSubmit = async (req, res) => {
                                 for (let i in dataItem) {
                                     // dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
                                     var stringValueChiden = '';
-                                    stringValueChiden = `('${rs.data.ITEM[i].PR_NO}','${rs.data.ITEM[i].PR_ITEM}','${rs.data.ITEM[i].KNTTP}','${rs.data.ITEM[i].PSTYP}','${rs.data.ITEM[i].MATNR}','${rs.data.ITEM[i].MATKL}','${rs.data.ITEM[i].TXZ01}'
-                                    ,'${rs.data.ITEM[i].WERKS}','${rs.data.ITEM[i].LGORT}','${rs.data.ITEM[i].LFDAT}','${rs.data.ITEM[i].LIFNR}','${rs.data.ITEM[i].MENGE}','${rs.data.ITEM[i].MEINS}','${rs.data.ITEM[i].PREIS}'
-                                    ,'${rs.data.ITEM[i].WEARS}','${rs.data.ITEM[i].PEINH}','${rs.data.ITEM[i].GSWRT}','${rs.data.ITEM[i].LOCAL_AMOUNT}','${rs.data.ITEM[i].EBELN}','${rs.data.ITEM[i].EBELP}','${rs.data.ITEM[i].LOEKZ}'
-                                    ,'${rs.data.ITEM[i].EKORG}','${rs.data.ITEM[i].EKGRP}','${rs.data.ITEM[i].WEPOS}','${rs.data.ITEM[i].WEUNB}','${rs.data.ITEM[i].BLCKD}','${rs.data.ITEM[i].REPOS}','${rs.data.ITEM[i].BLCKT}'
-                                    ,'${rs.data.ITEM[i].SAKTO}','${rs.data.ITEM[i].KOSTL}','${rs.data.ITEM[i].PRCTR}','${rs.data.ITEM[i].ANLN1}','${rs.data.ITEM[i].ANLN2}','${rs.data.ITEM[i].AUFNR}','${rs.data.ITEM[i].GSBER}'
-                                    ,'${rs.data.ITEM[i].KOKRS}','${rs.data.ITEM[i].GEBER}','${rs.data.ITEM[i].FIPOS}','${rs.data.ITEM[i].FKBER}','${rs.data.ITEM[i].FISTL}','${rs.data.ITEM[i].INFNR}')`;
+                                    stringValueChiden = `('${dataItem[i].PR_NO}','${dataItem[i].PR_ITEM}','${dataItem[i].KNTTP}','${dataItem[i].PSTYP}','${dataItem[i].MATNR}','${dataItem[i].MATKL}','${dataItem[i].TXZ01}'
+                                    ,'${dataItem[i].WERKS}','${dataItem[i].LGORT}','${dataItem[i].LFDAT}','${dataItem[i].LIFNR}','${dataItem[i].MENGE}','${dataItem[i].MEINS}','${dataItem[i].PREIS}'
+                                    ,'${dataItem[i].WEARS}','${dataItem[i].PEINH}','${dataItem[i].GSWRT}','${dataItem[i].LOCAL_AMOUNT}','${dataItem[i].EBELN}','${dataItem[i].EBELP}','${dataItem[i].LOEKZ}'
+                                    ,'${dataItem[i].EKORG}','${dataItem[i].EKGRP}','${dataItem[i].WEPOS}','${dataItem[i].WEUNB}','${dataItem[i].BLCKD}','${dataItem[i].REPOS}','${dataItem[i].BLCKT}'
+                                    ,'${dataItem[i].SAKTO}','${dataItem[i].KOSTL}','${dataItem[i].PRCTR}','${dataItem[i].ANLN1}','${dataItem[i].ANLN2}','${dataItem[i].AUFNR}','${dataItem[i].GSBER}'
+                                    ,'${dataItem[i].KOKRS}','${dataItem[i].GEBER}','${dataItem[i].FIPOS}','${dataItem[i].FKBER}','${dataItem[i].FISTL}','${dataItem[i].INFNR}')`;
                                     if (leng > Number(i) + 1) {
                                         stringValueChiden += ','
                                     }
@@ -293,12 +293,12 @@ let saveAndSubmit = async (req, res) => {
                             for (let i in dataItem) {
                                 // dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
                                 var stringValueChiden = '';
-                                stringValueChiden = `('${rs.data.ITEM[i].PR_NO}','${rs.data.ITEM[i].PR_ITEM}','${rs.data.ITEM[i].KNTTP}','${rs.data.ITEM[i].PSTYP}','${rs.data.ITEM[i].MATNR}','${rs.data.ITEM[i].MATKL}','${rs.data.ITEM[i].TXZ01}'
-                                ,'${rs.data.ITEM[i].WERKS}','${rs.data.ITEM[i].LGORT}','${rs.data.ITEM[i].LFDAT}','${rs.data.ITEM[i].LIFNR}','${rs.data.ITEM[i].MENGE}','${rs.data.ITEM[i].MEINS}','${rs.data.ITEM[i].PREIS}'
-                                ,'${rs.data.ITEM[i].WEARS}','${rs.data.ITEM[i].PEINH}','${rs.data.ITEM[i].GSWRT}','${rs.data.ITEM[i].LOCAL_AMOUNT}','${rs.data.ITEM[i].EBELN}','${rs.data.ITEM[i].EBELP}','${rs.data.ITEM[i].LOEKZ}'
-                                ,'${rs.data.ITEM[i].EKORG}','${rs.data.ITEM[i].EKGRP}','${rs.data.ITEM[i].WEPOS}','${rs.data.ITEM[i].WEUNB}','${rs.data.ITEM[i].BLCKD}','${rs.data.ITEM[i].REPOS}','${rs.data.ITEM[i].BLCKT}'
-                                ,'${rs.data.ITEM[i].SAKTO}','${rs.data.ITEM[i].KOSTL}','${rs.data.ITEM[i].PRCTR}','${rs.data.ITEM[i].ANLN1}','${rs.data.ITEM[i].ANLN2}','${rs.data.ITEM[i].AUFNR}','${rs.data.ITEM[i].GSBER}'
-                                ,'${rs.data.ITEM[i].KOKRS}','${rs.data.ITEM[i].GEBER}','${rs.data.ITEM[i].FIPOS}','${rs.data.ITEM[i].FKBER}','${rs.data.ITEM[i].FISTL}','${rs.data.ITEM[i].INFNR}')`;
+                                stringValueChiden = `('${dataItem[i].PR_NO}','${dataItem[i].PR_ITEM}','${dataItem[i].KNTTP}','${dataItem[i].PSTYP}','${dataItem[i].MATNR}','${dataItem[i].MATKL}','${dataItem[i].TXZ01}'
+                                ,'${dataItem[i].WERKS}','${dataItem[i].LGORT}','${dataItem[i].LFDAT}','${dataItem[i].LIFNR}','${dataItem[i].MENGE}','${dataItem[i].MEINS}','${dataItem[i].PREIS}'
+                                ,'${dataItem[i].WEARS}','${dataItem[i].PEINH}','${dataItem[i].GSWRT}','${dataItem[i].LOCAL_AMOUNT}','${dataItem[i].EBELN}','${dataItem[i].EBELP}','${dataItem[i].LOEKZ}'
+                                ,'${dataItem[i].EKORG}','${dataItem[i].EKGRP}','${dataItem[i].WEPOS}','${dataItem[i].WEUNB}','${dataItem[i].BLCKD}','${dataItem[i].REPOS}','${dataItem[i].BLCKT}'
+                                ,'${dataItem[i].SAKTO}','${dataItem[i].KOSTL}','${dataItem[i].PRCTR}','${dataItem[i].ANLN1}','${dataItem[i].ANLN2}','${dataItem[i].AUFNR}','${dataItem[i].GSBER}'
+                                ,'${dataItem[i].KOKRS}','${dataItem[i].GEBER}','${dataItem[i].FIPOS}','${dataItem[i].FKBER}','${dataItem[i].FISTL}','${dataItem[i].INFNR}')`;
                                 if (leng > Number(i) + 1) {
                                     stringValueChiden += ','
                                 }
