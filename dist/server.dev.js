@@ -190,8 +190,9 @@ var express = require("express");
 
 var app = express();
 
-var initAPIs = require("./src/routes/api"); //
-// var express = require('express')
+var initAPIs = require("./src/routes/api");
+
+var axios = require('axios'); // var express = require('express')
 
 
 var http = require("http"); // var app = express();
@@ -255,30 +256,42 @@ socketIo.on("connection", function (socket) {
   });
 }); ////////////////////
 // Node.js
-// var admin = require("firebase-admin");
-// var serviceAccount = require("./ciberprm-firebase-admin.json");
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount)
-// });
-// const registrationTokens = 'AAAAODuKmmQ:APA91bFyfubFmoGlazPFYwnBaYrjO-Wda9ZRl3EE0_LT8uPdjDPmgVafBA2a8h4rRIZtP-zMFIprf_Y-ihUqUCOomXERR2f8UurVFQT4UPBJ4Fh8i0JxecHPNVF_kyCC7l4nullOFs1V'
-// // var message = {
-// //   notification: { title: 'Super title', body: 'this is a test' },
-// //   token: 'AAAAUPP-8Sc:APA91bEaaCzGhb4ZBGF2VYof-COBvRowPjFcXv3hwh18p4j-BSNPBAM9v3g88G4Z4gCf3NEWqZY70wqJ-D5r6Hzx4VronkrAbeCi90UwwdJOTbIkFF1_ulYGQHSS-oQ0MzpkWdBqAiSN'
-// // };
-// const message = {
-//   "to": "fB9YIc2rRuCW0Gm24Wvf-C:APA91bHoPcBW3LM2AjlV4S_CwWL03WT1DlB0av40XChMK_qiUj9deU4EtMXAUuezJZUqLY2h9PP4vDyn2eU9mYaJ5F4a0Cj5U_2uFlbA73dTBEaYpLMRiSXJFoQ9-n8fUPDiayzNSoOY",
-//   data: {score: '850', time: '2:45'},
-//   token: registrationTokens,
-// };
-// admin.messaging().send(message)
-// .then((response) => {
-//   // Response is a message ID string.
-//   console.log(response)
-// })
-// .catch((error) => {
-//   //return error
-//   console.log(error)
-// });
+// const options = {
+//   headers: {
+//     'Content-Type': 'application/json',
+//     'Authorization': `key=AAAAODuKmmQ:APA91bFyfubFmoGlazPFYwnBaYrjO-Wda9ZRl3EE0_LT8uPdjDPmgVafBA2a8h4rRIZtP-zMFIprf_Y-ihUqUCOomXERR2f8UurVFQT4UPBJ4Fh8i0JxecHPNVF_kyCC7l4nullOFs1V`
+//   }
+//   };
+//   const data = { 
+//   "registration_ids": ["fupLfKdmRCSxri7rvCUdfe:APA91bGUSxEOToUDSIeY4b39U_wU2Ti-L2ijwiHifRUtfOJ7UHdxlbZ_8JBKSC8VyVMUZfCdA5xZULXiwUeDkhT8Yg3jNjRqPFLfM5QFG8V7C9vi_6jkTgZW664sIl8bLdpQcNWMwf-9"], 
+//    "notification" : {
+//    "body" : "New announcement assigned",
+//    "OrganizationId":"2",
+//    "content_available" : true,
+//    "priority" : "high",
+//    "subtitle":"Elementary School",
+//    "title":"hello"
+//    },
+//    "data" : {
+//    "priority" : "high",
+//    "sound":"app_sound.wav",
+//    "content_available" : true,
+//    "bodyText" : "New Announcement assigned",
+//    "organization" :"Elementary school"
+//   }
+//   };
+// axios.post('https://fcm.googleapis.com/fcm/send?',data,options)
+//   .then(function (response) {
+//     // handle success
+//     console.log(response);
+//   })
+//   .catch(function (error) {
+//     // handle error
+//     console.log(error);
+//   })
+//   .then(function () {
+//     // always executed
+//   });
 // module.exports.lisUser = listUSer;
 // chọn một port mà bạn muốn và sử dụng để chạy ứng dụng tại local
 

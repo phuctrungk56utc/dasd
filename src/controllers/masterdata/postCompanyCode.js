@@ -25,7 +25,7 @@ let postCompanyCode = async (req, res) => {
       valueName.push(req.body[value].butxt);
       valueLvorm.push(req.body[value].lvorm);
       valueTime.push('now()');
-      valueUsers.push(basicAuth.split(':')[0]);
+      valueUsers.push(basicAuth.split(':')[0].toUpperCase());
     }
     var query = `INSERT INTO prm."CompanyCode" (bukrs, butxt, lvorm,"createdAt","changeAt","createBy","changeBy") 
     select  

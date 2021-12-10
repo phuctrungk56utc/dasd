@@ -71,6 +71,8 @@ const getListFile = require("../controllers/PR/files/getListFile");
 const getNotification = require("../controllers/notification/getNotification");
 //updateStatus notification
 const updateStatus = require("../controllers/notification/updateStatus");
+//postNotificationMobile
+const postNotificationMobile = require("../controllers/notification/postNotificationMobile");
 
 //get listRelease
 const getListRelease = require("../controllers/moduleRelease/getListRelease");
@@ -92,7 +94,12 @@ const postUserRole = require("../controllers/role/postUserRole");
 const getUserCompany = require("../controllers/userCompany/getUserCompany");
 //
 const postUserCompany = require("../controllers/userCompany/postUserCompany");
-
+//get getUserInfo
+const getUserInfo = require("../controllers/userInfo/getUserInfo");
+//get getUserInfo
+const postUserInfo = require("../controllers/userInfo/postUserInfo");
+//get postUserInfo
+const changePass = require("../controllers/userInfo/changePass");
 /**
  * Init all APIs on your application
  * @param {*} app from express
@@ -114,7 +121,7 @@ let initAPIs = (app) => {
   router.post("/PostPrType", PostPrType.PostPrType);
 
   router.post("/updateHiddenItem", updateHiddenItem.updateHiddenItem);
-  
+
   //PR
   router.get("/PrTablePrApprove", PrTablePrApprove.PrTablePrApprove);
   router.get("/PrTable", PrTable.PrTable);
@@ -175,6 +182,9 @@ let initAPIs = (app) => {
   router.get("/getNotification", getNotification.getNotification);
   //dm đây là  update status code notification
   router.post("/updateStatus", updateStatus.updateStatus);
+  //postNotificationMobile
+  router.post("/postNotificationMobile", postNotificationMobile.postNotificationMobile);
+
   //dm đây là get list Release
   router.get("/getListRelease", getListRelease.getListRelease);
   //dm đây là post postStrategy
@@ -195,6 +205,12 @@ let initAPIs = (app) => {
   router.get("/getUserCompany", getUserCompany.getUserCompany);
   //
   router.post("/postUserCompany", postUserCompany.postUserCompany);
+  //getUserInfo
+  router.get("/getUserInfo", getUserInfo.getUserInfo);
+  //postUserInfo
+  router.post("/postUserInfo", postUserInfo.postUserInfo);
+  //changePass
+  router.post("/changePass", changePass.changePass);
   return app.use("/", router);
 }
 // module.exports = {

@@ -33,7 +33,7 @@ var db = require("../db/db");
 
 
 var PrTablePrApprove = function PrTablePrApprove(req, res) {
-  var userId, token, basicAuth, accessToken, decodeTk;
+  var userId, token, basicAuth, accessToken, decodeTk, query, now, prevMonthLastDate, prevMonthFirstDate, formatDateComponent, formatDate;
   return regeneratorRuntime.async(function PrTablePrApprove$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -44,7 +44,7 @@ var PrTablePrApprove = function PrTablePrApprove(req, res) {
           try {
             token = req.headers.authorization.split(' ')[1];
             basicAuth = Buffer.from(token, 'base64').toString('ascii');
-            userId = basicAuth.split(':')[0];
+            userId = basicAuth.split(':')[0].toUpperCase();
           } catch (error) {
             accessToken = crypt.decrypt(req.headers.authorization);
             decodeTk = decodeJWT(accessToken);
@@ -53,33 +53,54 @@ var PrTablePrApprove = function PrTablePrApprove(req, res) {
           // db.query(`SELECT * FROM prm."PrTable" INNER JOIN prm."PrItem" ON prm."PrTable"."PrNumber" = prm."PrItem"."PrNumber"`, (err, resp) => {
 
 
-          db.query("SELECT * FROM prm.\"PrTable\" pr INNER JOIN prm.\"PR_RELEASE_STRATEGY\" rl ON pr.\"PR_NO\" = rl.\"PR_NO\" WHERE pr.\"PR_SAP\" <> 0\n    and rl.\"userId\" = '".concat(userId.toUpperCase(), "'\n        ORDER BY pr.\"changeAt\" DESC\n        ;"), function (err, resp) {
+          query = '';
+
+          if (req.query.yearQuery !== undefined && req.query.yearQuery !== '') {
+            now = new Date("".concat(req.query.yearQuery), "".concat(req.query.monthQuery), '01');
+            prevMonthLastDate = new Date(now.getFullYear(), now.getMonth(), 0);
+            prevMonthFirstDate = new Date(now.getFullYear() - (now.getMonth() > 0 ? 0 : 1), (now.getMonth() - 1 + 12) % 12, 1);
+
+            formatDateComponent = function formatDateComponent(dateComponent) {
+              return (dateComponent < 10 ? '0' : '') + dateComponent;
+            };
+
+            formatDate = function formatDate(date) {
+              return formatDateComponent(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + formatDateComponent(date.getDate()));
+            };
+
+            query = "SELECT * FROM prm.\"PrTable\" pr INNER JOIN prm.\"PR_RELEASE_STRATEGY\" rl ON pr.\"PR_NO\" = rl.\"PR_NO\" WHERE (pr.\"PR_SAP\" <> 0\n      and rl.\"userId\" = '".concat(userId.toUpperCase(), "' or rl.\"userId\" = '").concat(userId.toLowerCase(), "') and \n      ( pr.\"changeAt\" BETWEEN '").concat(formatDate(prevMonthFirstDate), " 00:00:00' AND '").concat(formatDate(prevMonthLastDate), " 23:59:59' )\n      and\n      ( rl.\"changeAt\" BETWEEN '").concat(formatDate(prevMonthFirstDate), " 00:00:00' AND '").concat(formatDate(prevMonthLastDate), " 23:59:59' )\n          ORDER BY pr.\"changeAt\" DESC\n          ;");
+          } else {
+            query = "SELECT * FROM prm.\"PrTable\" pr INNER JOIN prm.\"PR_RELEASE_STRATEGY\" rl ON pr.\"PR_NO\" = rl.\"PR_NO\" WHERE pr.\"PR_SAP\" <> 0\n    and rl.\"userId\" = '".concat(userId.toUpperCase(), "' or rl.\"userId\" = '").concat(userId.toLowerCase(), "'\n        ORDER BY pr.\"changeAt\" DESC\n        ;");
+          }
+
+          db.query(query, function (err, resp) {
             if (err) {
               return res.status(500).json({
                 database: err
               });
             } else {
+              // console.log('object')
               return res.status(200).json({
                 item: resp.rows
               });
             }
           });
-          _context.next = 9;
+          _context.next = 11;
           break;
 
-        case 6:
-          _context.prev = 6;
+        case 8:
+          _context.prev = 8;
           _context.t0 = _context["catch"](0);
           return _context.abrupt("return", res.status(500).json({
             database: _context.t0
           }));
 
-        case 9:
+        case 11:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[0, 6]]);
+  }, null, null, [[0, 8]]);
 };
 
 module.exports = {

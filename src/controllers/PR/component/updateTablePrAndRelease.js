@@ -5,6 +5,7 @@ require('dotenv').config()
 // var sleep = require('sleep');
 const db = require("../../../db/db");
 const socIo = require("../../../../server");
+const axios = require('axios');
 // const apiSap = require("../../../apiSap/apiSap");
 // const axios = require('axios')
 /**
@@ -91,6 +92,7 @@ let updateTablePrAndRelease = async (resultSap, req, dataCallSap,userId) => {
                     "forUserId","FromUserId","PR_NO", "StatusCode", "StatusDescription", "createAt", "changeAt", "NotiTypeDescription", "NotiType")
                     VALUES`;
             var checkInsertNotification = 1;
+            const dataPushNotificationMobile = await db.query(`SELECT * FROM prm."NotificationMobileKey";`);
             for (let index in userRl.rows) {
                 //push notification
                 var today = new Date();
@@ -105,12 +107,56 @@ let updateTablePrAndRelease = async (resultSap, req, dataCallSap,userId) => {
                                     forUserId:userRl.rows[index].userId.toUpperCase(),
                                     FromUserId:userId,
                                     NotiType:3,
-                                    NotiTypeDescription:'Approve Request',
+                                    NotiTypeDescription:'Requires approval PR ',
                                     PR_NO:resultSap.HEADER.PR_NO,
                                     StatusCode:'',
                                     StatusDescription:'pending'});
                             }
                         }
+                        const options = {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `key=AAAAkYIgOkw:APA91bG85im61pDjrYE3EIcT_6110BNlgwG3mL07gFw7C2KuyIeUjnQoYQx2R1PDk58XcUkQtBShUWTrO4un49QzCG6rv2udO2FTTQ4hsW1ZVN7J81BJVqhBzJ_pkwc2jGwcuHV5ef2p`
+                            }
+                          };
+                        for(let n in dataPushNotificationMobile.rows){
+                            if(dataPushNotificationMobile.rows[n].userId === userRl.rows[index].userId.toUpperCase()){
+                                const data = {
+                                    "registration_ids": [`${dataPushNotificationMobile.rows[n].Token}`],
+                                    "notification": {
+                                        "body": `${userId}: Requires approval PR  - ${resultSap.HEADER.PR_NO}`,
+                                        "PR_NO": resultSap.HEADER.PR_NO,
+                                        "OrganizationId": "2",
+                                        "content_available": true,
+                                        "priority": "high",
+                                        "subtitle": "Elementary School",
+                                        "title": "PR",
+                                        "date": today
+                                    },
+                                    "data": {
+                                        "priority": "high",
+                                        "sound": "app_sound.wav",
+                                        "content_available": true,
+                                        "bodyText": resultSap.HEADER.PR_NO,
+                                        "organization": "Elementary school"
+                                    }
+                                }; 
+                                // options.headers.Authorization = `key=${dataPushNotificationMobile.rows[n].Token}`;
+                                await axios.post('https://fcm.googleapis.com/fcm/send?', data, options)
+                                .then(function (response) {
+                                    // handle success
+                                    // console.log(response);
+                                })
+                                .catch(function (error) {
+                                    // handle error
+                                    // console.log(error);
+                                })
+                                .then(function () {
+                                    // always executed
+                                });
+                            }
+                        }
+
                         //string for insert table notification
                         var stringValueChidenNoti = '';
                         if (checkInsertNotification === 1) {

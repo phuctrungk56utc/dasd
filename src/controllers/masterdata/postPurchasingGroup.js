@@ -25,7 +25,7 @@ let postPurchasingGroup = async (req, res) => {
       valueName.push(req.body[value].eknam);
       valueLvorm.push(req.body[value].lvorm);
       valueTime.push('now()');
-      valueUsers.push(basicAuth.split(':')[0]);
+      valueUsers.push(basicAuth.split(':')[0].toUpperCase());
     }
     var query = `INSERT INTO prm."PurchasingGroup" (ekgrp, eknam, lvorm,"createdAt","changeAt","createBy","changeBy") 
     select  

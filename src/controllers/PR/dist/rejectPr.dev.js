@@ -26,7 +26,8 @@ var apiSap = require("../../apiSap/apiSap");
 
 
 var rejectPr = function rejectPr(req, res) {
-  var userId, notification, token, basicAuth, accessToken, decodeTk, username, password, getPrSapSelect, PrSapRsData, data, today, index;
+  var userId, notification, token, basicAuth, accessToken, decodeTk, username, password, getPrSapSelect, PrSapRsData, data, dataPushNotificationMobile, today, index, options, n, _data;
+
   return regeneratorRuntime.async(function rejectPr$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -38,7 +39,7 @@ var rejectPr = function rejectPr(req, res) {
           try {
             token = req.headers.authorization.split(' ')[1];
             basicAuth = Buffer.from(token, 'base64').toString('ascii');
-            userId = basicAuth.split(':')[0];
+            userId = basicAuth.split(':')[0].toUpperCase();
           } catch (error) {
             accessToken = crypt.decrypt(req.headers.authorization);
             decodeTk = decodeJWT(accessToken);
@@ -83,7 +84,7 @@ var rejectPr = function rejectPr(req, res) {
           data = _context.sent;
 
           if (!(data.data.TYPE === 'S')) {
-            _context.next = 31;
+            _context.next = 44;
             break;
           }
 
@@ -95,11 +96,13 @@ var rejectPr = function rejectPr(req, res) {
           return regeneratorRuntime.awrap(db.query("UPDATE prm.\"PR_RELEASE_STRATEGY\"\n\t\t\tSET \"ACTION_CODE\"=2, \"ACTION_DESCRIPTION\"='Reject', \"changeAt\"='now()'\n\t\t\tWHERE \"PR_NO\"=".concat(req.body.params.PR_NO, " AND \"userId\"='").concat(userId.toUpperCase(), "';")));
 
         case 18:
-          //Update table HISTORY
-          // await db.query(``);
-          //push notification
+          _context.next = 20;
+          return regeneratorRuntime.awrap(db.query("SELECT * FROM prm.\"NotificationMobileKey\";"));
+
+        case 20:
+          dataPushNotificationMobile = _context.sent;
           today = new Date();
-          _context.prev = 19;
+          _context.prev = 22;
 
           for (index in notification.ioObject.listUSer) {
             if (notification.ioObject.listUSer[index].userId.toUpperCase() === getPrSapSelect.rows[0].changeBy.toUpperCase()) {
@@ -116,48 +119,102 @@ var rejectPr = function rejectPr(req, res) {
                 StatusDescription: 'pending'
               });
             }
-          } //insert to table notification
+          } //push for mobile
 
 
-          _context.next = 23;
-          return regeneratorRuntime.awrap(db.query("INSERT INTO prm.\"Notification\"(\n\t\t\t\t\"forUserId\",\"FromUserId\",\"PR_NO\", \"StatusCode\", \"StatusDescription\", \"createAt\", \"changeAt\", \"NotiTypeDescription\", \"NotiType\")\n\t\t\t\tVALUES ('".concat(getPrSapSelect.rows[0].changeBy.toUpperCase(), "','").concat(userId, "',").concat(req.body.params.PR_NO, ", '', 'pending', 'now()', 'now()', 'Reject your PR', 4);")));
+          options = {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': "key=AAAAkYIgOkw:APA91bG85im61pDjrYE3EIcT_6110BNlgwG3mL07gFw7C2KuyIeUjnQoYQx2R1PDk58XcUkQtBShUWTrO4un49QzCG6rv2udO2FTTQ4hsW1ZVN7J81BJVqhBzJ_pkwc2jGwcuHV5ef2p"
+            }
+          };
+          _context.t0 = regeneratorRuntime.keys(dataPushNotificationMobile.rows);
 
-        case 23:
-          _context.next = 28;
+        case 26:
+          if ((_context.t1 = _context.t0()).done) {
+            _context.next = 34;
+            break;
+          }
+
+          n = _context.t1.value;
+
+          if (!(dataPushNotificationMobile.rows[n].userId === getPrSapSelect.rows[0].changeBy.toUpperCase())) {
+            _context.next = 32;
+            break;
+          }
+
+          _data = {
+            "registration_ids": ["".concat(dataPushNotificationMobile.rows[n].Token)],
+            "notification": {
+              "body": "".concat(userId, ": Reject your PR - ").concat(req.body.params.PR_NO),
+              "PR_NO": req.body.params.PR_NO,
+              "OrganizationId": "2",
+              "content_available": true,
+              "priority": "high",
+              "subtitle": "Elementary School",
+              "title": "PR",
+              "date": today
+            },
+            "data": {
+              "priority": "high",
+              "sound": "app_sound.wav",
+              "content_available": true,
+              "bodyText": req.body.params.PR_NO,
+              "organization": "Elementary school"
+            }
+          };
+          _context.next = 32;
+          return regeneratorRuntime.awrap(axios.post('https://fcm.googleapis.com/fcm/send?', _data, options).then(function (response) {// handle success
+            // console.log(response);
+          })["catch"](function (error) {// handle error
+            // console.log(error);
+          }).then(function () {// always executed
+          }));
+
+        case 32:
+          _context.next = 26;
           break;
 
-        case 25:
-          _context.prev = 25;
-          _context.t0 = _context["catch"](19);
-          console.log(_context.t0);
+        case 34:
+          _context.next = 36;
+          return regeneratorRuntime.awrap(db.query("INSERT INTO prm.\"Notification\"(\n\t\t\t\t\"forUserId\",\"FromUserId\",\"PR_NO\", \"StatusCode\", \"StatusDescription\", \"createAt\", \"changeAt\", \"NotiTypeDescription\", \"NotiType\")\n\t\t\t\tVALUES ('".concat(getPrSapSelect.rows[0].changeBy.toUpperCase(), "','").concat(userId, "',").concat(req.body.params.PR_NO, ", '', 'pending', 'now()', 'now()', 'Reject your PR', 4);")));
 
-        case 28:
+        case 36:
+          _context.next = 41;
+          break;
+
+        case 38:
+          _context.prev = 38;
+          _context.t2 = _context["catch"](22);
+          console.log(_context.t2);
+
+        case 41:
           return _context.abrupt("return", res.status(200).json({
             message: 'Success'
           }));
 
-        case 31:
+        case 44:
           return _context.abrupt("return", res.status(404).json({
             message: 'Có lỗi gì đó!'
           }));
 
-        case 32:
-          _context.next = 37;
+        case 45:
+          _context.next = 50;
           break;
 
-        case 34:
-          _context.prev = 34;
-          _context.t1 = _context["catch"](0);
+        case 47:
+          _context.prev = 47;
+          _context.t3 = _context["catch"](0);
           return _context.abrupt("return", res.status(404).json({
             message: err.message
           }));
 
-        case 37:
+        case 50:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[0, 34], [19, 25]]);
+  }, null, null, [[0, 47], [22, 38]]);
 };
 
 module.exports = {

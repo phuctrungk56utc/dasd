@@ -34,7 +34,9 @@ let isPrData = async (req, res, next) => {
         var roleApi = null
         var checkAuthoRole = false;
         var checkRun = false
-        if (req.originalUrl.split('?')[0] !== '/getNotification' && req.originalUrl.split('?')[0] !== '/updateStatus') {
+        if (req.originalUrl.split('?')[0] !== '/getNotification' && req.originalUrl.split('?')[0] !== '/updateStatus'
+        && req.originalUrl.split('?')[0] !== '/getUserInfo' && req.originalUrl.split('?')[0] !== '/postNotificationMobile'
+        && req.originalUrl.split('?')[0] !== '/postUserInfo' && req.originalUrl.split('?')[0] !== '/changePass') {
             checkRun = true;
 
             checkRole = await db.query(`select t2."RoleType",t2."View",t2."Create/Edit/Delete",t2."Approve",t2."All" from prm."userRole" t1 inner join

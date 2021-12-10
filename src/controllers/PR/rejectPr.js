@@ -21,7 +21,7 @@ let rejectPr = async (req, res) => {
 		try {
 			const token = req.headers.authorization.split(' ')[1];
 			const basicAuth = Buffer.from(token, 'base64').toString('ascii');
-			userId = basicAuth.split(':')[0];
+			userId = basicAuth.split(':')[0].toUpperCase();
 		} catch (error) {
 			const accessToken = crypt.decrypt(req.headers.authorization);
 			const decodeTk = decodeJWT(accessToken);
@@ -69,23 +69,69 @@ let rejectPr = async (req, res) => {
 			//Update table HISTORY
 			// await db.query(``);
 			//push notification
+			const dataPushNotificationMobile = await db.query(`SELECT * FROM prm."NotificationMobileKey";`);
 			var today = new Date();
 			try {
 				for (let index in notification.ioObject.listUSer) {
 					if (notification.ioObject.listUSer[index].userId.toUpperCase() === getPrSapSelect.rows[0].changeBy.toUpperCase()) {
-						notification.ioObject.socketIo.to(notification.ioObject.listUSer[index].id).emit("sendDataServer", { 
-							Content:null,
-							createAt:today,
-							changeAt:today,
-							forUserId:getPrSapSelect.rows[0].changeBy.toUpperCase(),
-							FromUserId:userId,
-							NotiType:4,
-							NotiTypeDescription:'Reject your PR',
-							PR_NO:req.body.params.PR_NO,
-							StatusCode:'',
-							StatusDescription:'pending'});
+						notification.ioObject.socketIo.to(notification.ioObject.listUSer[index].id).emit("sendDataServer", {
+							Content: null,
+							createAt: today,
+							changeAt: today,
+							forUserId: getPrSapSelect.rows[0].changeBy.toUpperCase(),
+							FromUserId: userId,
+							NotiType: 4,
+							NotiTypeDescription: 'Reject your PR',
+							PR_NO: req.body.params.PR_NO,
+							StatusCode: '',
+							StatusDescription: 'pending'
+						});
 					}
 				}
+				//push for mobile
+				const options = {
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `key=AAAAkYIgOkw:APA91bG85im61pDjrYE3EIcT_6110BNlgwG3mL07gFw7C2KuyIeUjnQoYQx2R1PDk58XcUkQtBShUWTrO4un49QzCG6rv2udO2FTTQ4hsW1ZVN7J81BJVqhBzJ_pkwc2jGwcuHV5ef2p`
+					}
+				};
+				for (let n in dataPushNotificationMobile.rows) {
+					if (dataPushNotificationMobile.rows[n].userId === getPrSapSelect.rows[0].changeBy.toUpperCase()) {
+						const data = {
+							"registration_ids": [`${dataPushNotificationMobile.rows[n].Token}`],
+							"notification": {
+								"body": `${userId}: Reject your PR - ${req.body.params.PR_NO}`,
+								"PR_NO": req.body.params.PR_NO,
+								"OrganizationId": "2",
+								"content_available": true,
+								"priority": "high",
+								"subtitle": "Elementary School",
+								"title": "PR",
+								"date": today
+							},
+							"data": {
+								"priority": "high",
+								"sound": "app_sound.wav",
+								"content_available": true,
+								"bodyText": req.body.params.PR_NO,
+								"organization": "Elementary school"
+							}
+						};
+						await axios.post('https://fcm.googleapis.com/fcm/send?', data, options)
+							.then(function (response) {
+								// handle success
+								// console.log(response);
+							})
+							.catch(function (error) {
+								// handle error
+								// console.log(error);
+							})
+							.then(function () {
+								// always executed
+							});
+					}
+				}
+
 				//insert to table notification
 				await db.query(`INSERT INTO prm."Notification"(
 				"forUserId","FromUserId","PR_NO", "StatusCode", "StatusDescription", "createAt", "changeAt", "NotiTypeDescription", "NotiType")

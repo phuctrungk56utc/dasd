@@ -90,7 +90,7 @@ let approvePr = async (req, res) => {
 		try {
 			const token = req.headers.authorization.split(' ')[1];
 			const basicAuth = Buffer.from(token, 'base64').toString('ascii');
-			userId = basicAuth.split(':')[0];
+			userId = basicAuth.split(':')[0].toUpperCase();
 		} catch (error) {
 			const accessToken = crypt.decrypt(req.headers.authorization);
 			const decodeTk = decodeJWT(accessToken);
@@ -99,7 +99,7 @@ let approvePr = async (req, res) => {
 		// Get the size of an object
 		var sizeQuery = Object.size(req.query);
 		var sizeBody = Object.size(req.body);
-		const PR_NO_VALUE  = req.body.params ? req.body.params.PR_NO : req.body.PR_NO;
+		const PR_NO_VALUE = req.body.params ? req.body.params.PR_NO : req.body.PR_NO;
 		var query;
 		if (sizeQuery > 0 || sizeBody > 0) {
 			query = `SELECT * FROM prm."PR_RELEASE_STRATEGY" 
@@ -145,6 +145,7 @@ let approvePr = async (req, res) => {
 					}
 				}
 				if (checkPushNotification) {
+					const dataPushNotificationMobile = await db.query(`SELECT * FROM prm."NotificationMobileKey";`);
 					try {
 						var stringValue = `INSERT INTO prm."Notification"(
 							"forUserId","FromUserId","PR_NO",  "StatusCode", "StatusDescription", "createAt", "changeAt", "NotiTypeDescription", "NotiType")
@@ -156,31 +157,96 @@ let approvePr = async (req, res) => {
 								for (let i in notification.ioObject.listUSer) {
 									//notification for next approver
 									if (notification.ioObject.listUSer[i].userId.toUpperCase() === author.rows[j].userId.toUpperCase()) {
-										notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", { 
-											Content:null,
-											createAt:today,
-											changeAt:today,
-											forUserId:author.rows[j].userId.toUpperCase(),
-											FromUserId:userRQ.rows[0].createBy.toUpperCase(),
-											NotiType:3,
-											NotiTypeDescription:'Approve Request',
-											PR_NO:PR_NO_VALUE,
-											StatusCode:'',
-											StatusDescription:'pending'});
+										notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", {
+											Content: null,
+											createAt: today,
+											changeAt: today,
+											forUserId: author.rows[j].userId.toUpperCase(),
+											FromUserId: userRQ.rows[0].createBy.toUpperCase(),
+											NotiType: 3,
+											NotiTypeDescription: 'Requires approval PR ',
+											PR_NO: PR_NO_VALUE,
+											StatusCode: '',
+											StatusDescription: 'pending'
+										});
 									}
 									//notification for requester
 									if (notification.ioObject.listUSer[i].userId.toUpperCase() === userRQ.rows[0].createBy.toUpperCase()) {
-										notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", { 
-											Content:null,
-											createAt:today,
-											changeAt:today,
-											forUserId:userRQ.rows[0].createBy.toUpperCase(),
-											FromUserId:userId,
-											NotiType:3,
-											NotiTypeDescription:'Approve Request',
-											PR_NO:PR_NO_VALUE,
-											StatusCode:'',
-											StatusDescription:'pending'});
+										notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", {
+											Content: null,
+											createAt: today,
+											changeAt: today,
+											forUserId: userRQ.rows[0].createBy.toUpperCase(),
+											FromUserId: userId,
+											NotiType: 3,
+											NotiTypeDescription: 'Approve your PR',
+											PR_NO: PR_NO_VALUE,
+											StatusCode: '',
+											StatusDescription: 'pending'
+										});
+									}
+								}
+								//for mobile
+								const options = {
+									headers: {
+										'Content-Type': 'application/json',
+										'Authorization': `key=AAAAkYIgOkw:APA91bG85im61pDjrYE3EIcT_6110BNlgwG3mL07gFw7C2KuyIeUjnQoYQx2R1PDk58XcUkQtBShUWTrO4un49QzCG6rv2udO2FTTQ4hsW1ZVN7J81BJVqhBzJ_pkwc2jGwcuHV5ef2p`
+									}
+								};
+								const data = {
+									"registration_ids": [],
+									"notification": {
+										"body": `${userId}: Approve Request - ${PR_NO_VALUE}`,
+										"PR_NO": PR_NO_VALUE,
+										"OrganizationId": "2",
+										"content_available": true,
+										"priority": "high",
+										"subtitle": "Elementary School",
+										"title": "PR",
+										"date": today
+									},
+									"data": {
+										"priority": "high",
+										"sound": "app_sound.wav",
+										"content_available": true,
+										"bodyText": PR_NO_VALUE,
+										"organization": "Elementary school"
+									}
+								};
+								for (let n in dataPushNotificationMobile.rows) {
+									//for next approve
+									if (dataPushNotificationMobile.rows[n].userId === author.rows[j].userId.toUpperCase()) {
+										data.notification.body = `${userRQ.rows[0].createBy.toUpperCase()}: Requires approval PR - ${PR_NO_VALUE}`;
+										data.registration_ids = [`${dataPushNotificationMobile.rows[n].Token}`]
+										await axios.post('https://fcm.googleapis.com/fcm/send?', data, options)
+											.then(function (response) {
+												// handle success
+												console.log(response);
+											})
+											.catch(function (error) {
+												// handle error
+												console.log(error);
+											})
+											.then(function () {
+												// always executed
+											});
+									}
+									//for mobile and requester
+									if (dataPushNotificationMobile.rows[n].userId === userRQ.rows[0].createBy.toUpperCase()) {
+										data.notification.body = `${userId}: Approve your PR  - ${PR_NO_VALUE}`;
+										data.registration_ids = [`${dataPushNotificationMobile.rows[n].Token}`]
+										await axios.post('https://fcm.googleapis.com/fcm/send?', data, options)
+											.then(function (response) {
+												// handle success
+												console.log(response);
+											})
+											.catch(function (error) {
+												// handle error
+												console.log(error);
+											})
+											.then(function () {
+												// always executed
+											});
 									}
 								}
 
@@ -197,11 +263,11 @@ let approvePr = async (req, res) => {
 
 						}
 						//insert to table notification
-						if(checkInsertNotification > 1){
+						if (checkInsertNotification > 1) {
 							stringValue += `,('${userRQ.rows[0].createBy.toUpperCase()}','${userId}',${PR_NO_VALUE}, '', 'pending', 'now()', 'now()', 'Approve your PR', 3)`;
 							await db.query(`${stringValue}`);
 						}
-						
+
 					} catch (error) {
 						console.log(error)
 					}
@@ -218,28 +284,6 @@ let approvePr = async (req, res) => {
 				"REL_CODE": "T1",
 				"REJECT": ""
 			};
-			//cal api approve PR sap
-			// var username = 'giangph';
-			// var password = '1234567';
-			// // var credentials = btoa(username + ':' + password);
-			// // var basicAuth = 'Basic ' + credentials;
-
-			// const options = {
-			// 	method: 'POST',
-			// 	auth: {
-			// 		username: username,
-			// 		password: password
-			// 	},
-			// 	headers: {
-			// 		xsrfCookieName: 'XSRF-TOKEN',
-			// 		xsrfHeaderName: 'X-XSRF-TOKEN',
-			// 		"X-XSRF-TOKEN": 'ZoJgPjA294f2JdEV1bLyzQ==',
-			// 		"x-csrf-token": 'Fetch',
-			// 		"Content-Type": "application/x-www-form-urlencoded"
-			// 	},
-			// 	data: PrSapRsData,
-			// 	url: `http://hana.ciber.vn:8007/sap/bc/zwebservice/zpr_release?sap-client=200`,
-			// };
 			// const data = await axios(options);
 			const data = await apiSap.apiSap(`http://hana.ciber.vn:8007/sap/bc/zwebservice/zpr_release?sap-client=200`, PrSapRsData, 'POST');
 			if (data.data.TYPE === 'S') {
@@ -256,20 +300,65 @@ let approvePr = async (req, res) => {
 				// await db.query(``);
 				//push notification
 				// const userRQ = await db.query(`select "createBy" from prm."PrTable" where "PR_NO"=${PR_NO_VALUE}`);
+				const dataPushNotificationMobile = await db.query(`SELECT * FROM prm."NotificationMobileKey";`);
 				var today = new Date();
 				for (let i in notification.ioObject.listUSer) {
 					if (notification.ioObject.listUSer[i].userId.toUpperCase() === userRQ.rows[0].createBy.toUpperCase()) {
-						notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", { 
-							Content:null,
-							createAt:today,
-							changeAt:today,
-							forUserId:userRQ.rows[0].createBy.toUpperCase(),
-							FromUserId:userId,
-							NotiType:5,
-							NotiTypeDescription:'Approve complete',
-							PR_NO:PR_NO_VALUE,
-							StatusCode:'',
-							StatusDescription:'pending'});
+						notification.ioObject.socketIo.to(notification.ioObject.listUSer[i].id).emit("sendDataServer", {
+							Content: null,
+							createAt: today,
+							changeAt: today,
+							forUserId: userRQ.rows[0].createBy.toUpperCase(),
+							FromUserId: userId,
+							NotiType: 5,
+							NotiTypeDescription: 'Approve complete',
+							PR_NO: PR_NO_VALUE,
+							StatusCode: '',
+							StatusDescription: 'pending'
+						});
+					}
+				}
+				for (let n in dataPushNotificationMobile.rows) {
+					if (dataPushNotificationMobile.rows[n].userId === userRQ.rows[0].createBy.toUpperCase()) {
+						const options = {
+							headers: {
+								'Content-Type': 'application/json',
+								'Authorization': `key=AAAAkYIgOkw:APA91bG85im61pDjrYE3EIcT_6110BNlgwG3mL07gFw7C2KuyIeUjnQoYQx2R1PDk58XcUkQtBShUWTrO4un49QzCG6rv2udO2FTTQ4hsW1ZVN7J81BJVqhBzJ_pkwc2jGwcuHV5ef2p`
+							}
+						};
+						const data = {
+							"registration_ids": [],
+							"notification": {
+								"body": `${userId}: Approve Complete your PR - ${PR_NO_VALUE}`,
+								"PR_NO": PR_NO_VALUE,
+								"OrganizationId": "2",
+								"content_available": true,
+								"priority": "high",
+								"subtitle": "Elementary School",
+								"title": "PR",
+								"date": today
+							},
+							"data": {
+								"priority": "high",
+								"sound": "app_sound.wav",
+								"content_available": true,
+								"bodyText": PR_NO_VALUE,
+								"organization": "Elementary school"
+							}
+						};
+						data.registration_ids = [`${dataPushNotificationMobile.rows[n].Token}`]
+						await axios.post('https://fcm.googleapis.com/fcm/send?', data, options)
+							.then(function (response) {
+								// handle success
+								// console.log(response);
+							})
+							.catch(function (error) {
+								// handle error
+								// console.log(error);
+							})
+							.then(function () {
+								// always executed
+							});
 					}
 				}
 				//insert to table notification
@@ -277,7 +366,7 @@ let approvePr = async (req, res) => {
 					"forUserId","FromUserId","PR_NO", "StatusCode", "StatusDescription", "createAt", "changeAt", "NotiTypeDescription", "NotiType")
 					VALUES ('${userRQ.rows[0].createBy.toUpperCase()}','${userId}',${PR_NO_VALUE}, '', 'pending', 'now()', 'now()', 'Approve complete', 5);`);
 				return res.status(200).json({ message: 'Success', code: 5 });
-			}else{
+			} else {
 				return res.status(200).json({ message: 'Success', data: data.data.MESSAGE });
 			}
 		} else {

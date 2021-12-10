@@ -115,7 +115,10 @@ var getListFile = require("../controllers/PR/files/getListFile"); //get getNotif
 var getNotification = require("../controllers/notification/getNotification"); //updateStatus notification
 
 
-var updateStatus = require("../controllers/notification/updateStatus"); //get listRelease
+var updateStatus = require("../controllers/notification/updateStatus"); //postNotificationMobile
+
+
+var postNotificationMobile = require("../controllers/notification/postNotificationMobile"); //get listRelease
 
 
 var getListRelease = require("../controllers/moduleRelease/getListRelease"); //post postStrategy
@@ -145,7 +148,16 @@ var postUserRole = require("../controllers/role/postUserRole"); //
 var getUserCompany = require("../controllers/userCompany/getUserCompany"); //
 
 
-var postUserCompany = require("../controllers/userCompany/postUserCompany");
+var postUserCompany = require("../controllers/userCompany/postUserCompany"); //get getUserInfo
+
+
+var getUserInfo = require("../controllers/userInfo/getUserInfo"); //get getUserInfo
+
+
+var postUserInfo = require("../controllers/userInfo/postUserInfo"); //get postUserInfo
+
+
+var changePass = require("../controllers/userInfo/changePass");
 /**
  * Init all APIs on your application
  * @param {*} app from express
@@ -220,7 +232,9 @@ var initAPIs = function initAPIs(app) {
 
   router.get("/getNotification", getNotification.getNotification); //dm đây là  update status code notification
 
-  router.post("/updateStatus", updateStatus.updateStatus); //dm đây là get list Release
+  router.post("/updateStatus", updateStatus.updateStatus); //postNotificationMobile
+
+  router.post("/postNotificationMobile", postNotificationMobile.postNotificationMobile); //dm đây là get list Release
 
   router.get("/getListRelease", getListRelease.getListRelease); //dm đây là post postStrategy
 
@@ -240,7 +254,13 @@ var initAPIs = function initAPIs(app) {
 
   router.get("/getUserCompany", getUserCompany.getUserCompany); //
 
-  router.post("/postUserCompany", postUserCompany.postUserCompany);
+  router.post("/postUserCompany", postUserCompany.postUserCompany); //getUserInfo
+
+  router.get("/getUserInfo", getUserInfo.getUserInfo); //postUserInfo
+
+  router.post("/postUserInfo", postUserInfo.postUserInfo); //changePass
+
+  router.post("/changePass", changePass.changePass);
   return app.use("/", router);
 }; // module.exports = {
 //   initAPIs: initAPIs,

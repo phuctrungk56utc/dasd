@@ -47,7 +47,7 @@ var updatePrSubmit = function updatePrSubmit(req, res) {
           try {
             token = req.headers.authorization.split(' ')[1];
             basicAuth = Buffer.from(token, 'base64').toString('ascii');
-            userId = basicAuth.split(':')[0];
+            userId = basicAuth.split(':')[0].toUpperCase();
           } catch (error) {
             accessToken = crypt.decrypt(req.headers.authorization);
             decodeTk = decodeJWT(accessToken);
@@ -193,7 +193,7 @@ var updatePrSubmit = function updatePrSubmit(req, res) {
         case 59:
           rs = _context.sent;
 
-          if (!rs) {
+          if (!(rs.code !== 400)) {
             _context.next = 67;
             break;
           }
@@ -218,7 +218,7 @@ var updatePrSubmit = function updatePrSubmit(req, res) {
           return regeneratorRuntime.awrap(db.query("".concat(stringValue, ";")));
 
         case 66:
-          return _context.abrupt("return", res.status(200).json(rs));
+          return _context.abrupt("return", res.status(200).json(rs.data));
 
         case 67:
           _context.next = 75;

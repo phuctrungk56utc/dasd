@@ -42,7 +42,7 @@ var postReleaseConfigList = function postReleaseConfigList(req, res) {
                     try {
                       token = req.headers.authorization.split(' ')[1];
                       basicAuth = Buffer.from(token, 'base64').toString('ascii');
-                      userId = basicAuth.split(':')[0];
+                      userId = basicAuth.split(':')[0].toUpperCase();
                     } catch (error) {
                       accessToken = crypt.decrypt(req.headers.authorization);
                       decodeTk = decodeJWT(accessToken);
@@ -217,7 +217,7 @@ var postReleaseConfigList = function postReleaseConfigList(req, res) {
 
                   case 74:
                     if (dataRq.columnType === 'int' || dataRq.columnType === 'integer' || dataRq.columnType === 'Number') {
-                      typeDB = "\"".concat(dataRq.columnName + "_From", "\" integer,\n                    \"").concat(dataRq.columnName + "_To", "\" integer,");
+                      typeDB = "\"".concat(dataRq.columnName + "_From", "\" bigint,\n                    \"").concat(dataRq.columnName + "_To", "\" integer,");
                     } else if (dataRq.columnType === 'boolean' || dataRq.columnType === 'Boolean') {
                       typeDB = "\"".concat(dataRq.columnName, "\" boolean,");
                     }

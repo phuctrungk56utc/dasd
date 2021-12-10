@@ -22,7 +22,7 @@ var db = require("../../db/db"); // const axios = require('axios');
 
 
 var saveDraft = function saveDraft(req, res) {
-  var userId, token, basicAuth, accessToken, decodeTk, dataItem, leng, query, update, stringValue, i, stringValueChiden, _dataItem, _leng, _query, id, _i;
+  var userId, token, basicAuth, accessToken, decodeTk, _dataItem, leng, queryHeader, update, stringValue, i, stringValueChiden, _dataItem2, _leng, query, id, _i, updateTableItem, _leng2, _i2;
 
   return regeneratorRuntime.async(function saveDraft$(_context) {
     while (1) {
@@ -34,7 +34,7 @@ var saveDraft = function saveDraft(req, res) {
           try {
             token = req.headers.authorization.split(' ')[1];
             basicAuth = Buffer.from(token, 'base64').toString('ascii');
-            userId = basicAuth.split(':')[0];
+            userId = basicAuth.split(':')[0].toUpperCase();
           } catch (error) {
             accessToken = crypt.decrypt(req.headers.authorization);
             decodeTk = decodeJWT(accessToken);
@@ -42,13 +42,13 @@ var saveDraft = function saveDraft(req, res) {
           }
 
           if (!(req.body.params.dataPR.HEADER.PR_NO !== 0)) {
-            _context.next = 23;
+            _context.next = 25;
             break;
           }
 
           //update
-          dataItem = req.body.params.dataPR.ITEM;
-          leng = dataItem.length;
+          _dataItem = req.body.params.dataPR.ITEM;
+          leng = _dataItem.length;
 
           if (!(leng === 0)) {
             _context.next = 8;
@@ -60,38 +60,40 @@ var saveDraft = function saveDraft(req, res) {
           }));
 
         case 8:
-          query = "UPDATE prm.\"PrTable\"\n            SET\n            \"DESCRIPTION\" = '".concat(req.body.params.dataPR.HEADER.DESCRIPTION, "',\n            \"BUKRS\" = '").concat(req.body.params.dataPR.HEADER.BUKRS, "',\n            \"PR_TYPE\" = '").concat(req.body.params.dataPR.HEADER.PR_TYPE, "',\n            \"WAERS\" = '").concat(req.body.params.dataPR.HEADER.WAERS === undefined ? '' : req.body.params.dataPR.HEADER.WAERS, "',\n            \"HWAERS\" = '").concat(req.body.params.dataPR.HEADER.HWAERS === undefined ? '' : req.body.params.dataPR.HEADER.HWAERS, "',\n            \"changeAt\"=now(),\n            \"changeBy\"='").concat(userId, "'\n            WHERE \"PR_NO\"=").concat(req.body.params.dataPR.HEADER.PR_NO, "\n            RETURNING \"changeAt\";");
+          queryHeader = "UPDATE prm.\"PrTable\"\n            SET\n            \"DESCRIPTION\" = '".concat(req.body.params.dataPR.HEADER.DESCRIPTION, "',\n            \"BUKRS\" = '").concat(req.body.params.dataPR.HEADER.BUKRS, "',\n            \"PR_TYPE\" = '").concat(req.body.params.dataPR.HEADER.PR_TYPE, "',\n            \"WAERS\" = '").concat(req.body.params.dataPR.HEADER.WAERS === undefined ? '' : req.body.params.dataPR.HEADER.WAERS, "',\n            \"HWAERS\" = '").concat(req.body.params.dataPR.HEADER.HWAERS === undefined ? '' : req.body.params.dataPR.HEADER.HWAERS, "',\n            \"changeAt\"=now(),\n            \"changeBy\"='").concat(userId, "'\n            WHERE \"PR_NO\"=").concat(req.body.params.dataPR.HEADER.PR_NO, "\n            RETURNING \"changeAt\";");
           _context.next = 11;
-          return regeneratorRuntime.awrap(db.query(query));
+          return regeneratorRuntime.awrap(db.query("".concat(queryHeader)));
 
         case 11:
           update = _context.sent;
 
           if (!(update.rowCount > 0)) {
-            _context.next = 20;
+            _context.next = 22;
             break;
           }
 
-          stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_NO\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n                \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n                \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\") VALUES";
+          stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_ITEM\",\"PR_NO\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n                \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n                \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\",\"INFNR\") VALUES";
 
-          for (i in dataItem) {
-            dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
+          for (i in _dataItem) {
+            _dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
             stringValueChiden = '';
-            stringValueChiden = "('".concat(dataItem[i].PR_NO, "','").concat(dataItem[i].KNTTP, "','").concat(dataItem[i].PSTYP, "','").concat(dataItem[i].MATNR, "','").concat(dataItem[i].MATKL, "','").concat(dataItem[i].TXZ01, "'\n                        ,'").concat(dataItem[i].WERKS, "','").concat(dataItem[i].LGORT, "','").concat(dataItem[i].LFDAT, "','").concat(dataItem[i].LIFNR, "','").concat(dataItem[i].MENGE, "','").concat(dataItem[i].MEINS, "','").concat(dataItem[i].PREIS, "'\n                        ,'").concat(dataItem[i].WEARS, "','").concat(dataItem[i].PEINH, "','").concat(dataItem[i].GSWRT, "','").concat(dataItem[i].LOCAL_AMOUNT, "','").concat(dataItem[i].EBELN, "','").concat(dataItem[i].EBELP, "','").concat(dataItem[i].LOEKZ, "'\n                        ,'").concat(dataItem[i].EKORG, "','").concat(dataItem[i].EKGRP, "','").concat(dataItem[i].WEPOS, "','").concat(dataItem[i].WEUNB, "','").concat(dataItem[i].BLCKD, "','").concat(dataItem[i].REPOS, "','").concat(dataItem[i].BLCKT, "'\n                        ,'").concat(dataItem[i].SAKTO, "','").concat(dataItem[i].KOSTL, "','").concat(dataItem[i].PRCTR, "','").concat(dataItem[i].ANLN1, "','").concat(dataItem[i].ANLN2, "','").concat(dataItem[i].AUFNR, "','").concat(dataItem[i].GSBER, "'\n                        ,'").concat(dataItem[i].KOKRS, "','").concat(dataItem[i].GEBER, "','").concat(dataItem[i].FIPOS, "','").concat(dataItem[i].FKBER, "','").concat(dataItem[i].FISTL, "')");
+            stringValueChiden = "('".concat(_dataItem[i].PR_ITEM, "','").concat(_dataItem[i].PR_NO, "','").concat(_dataItem[i].KNTTP, "','").concat(_dataItem[i].PSTYP, "','").concat(_dataItem[i].MATNR, "','").concat(_dataItem[i].MATKL, "','").concat(_dataItem[i].TXZ01, "'\n                        ,'").concat(_dataItem[i].WERKS, "','").concat(_dataItem[i].LGORT, "','").concat(_dataItem[i].LFDAT, "','").concat(_dataItem[i].LIFNR, "','").concat(_dataItem[i].MENGE, "','").concat(_dataItem[i].MEINS, "','").concat(_dataItem[i].PREIS, "'\n                        ,'").concat(_dataItem[i].WEARS, "','").concat(_dataItem[i].PEINH, "','").concat(_dataItem[i].GSWRT, "','").concat(_dataItem[i].LOCAL_AMOUNT, "','").concat(_dataItem[i].EBELN, "','").concat(_dataItem[i].EBELP, "','").concat(_dataItem[i].LOEKZ, "'\n                        ,'").concat(_dataItem[i].EKORG, "','").concat(_dataItem[i].EKGRP, "','").concat(_dataItem[i].WEPOS, "','").concat(_dataItem[i].WEUNB, "','").concat(_dataItem[i].BLCKD, "','").concat(_dataItem[i].REPOS, "','").concat(_dataItem[i].BLCKT, "'\n                        ,'").concat(_dataItem[i].SAKTO, "','").concat(_dataItem[i].KOSTL, "','").concat(_dataItem[i].PRCTR, "','").concat(_dataItem[i].ANLN1, "','").concat(_dataItem[i].ANLN2, "','").concat(_dataItem[i].AUFNR, "','").concat(_dataItem[i].GSBER, "'\n                        ,'").concat(_dataItem[i].KOKRS, "','").concat(_dataItem[i].GEBER, "','").concat(_dataItem[i].FIPOS, "','").concat(_dataItem[i].FKBER, "','").concat(_dataItem[i].FISTL, "','").concat(_dataItem[i].INFNR, "')");
 
             if (leng > Number(i) + 1) {
               stringValueChiden += ',';
             }
 
             stringValue += stringValueChiden;
-          } // await db.query(`DELETE FROM prm."PrItem"
-          // WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
-
+          }
 
           _context.next = 17;
-          return regeneratorRuntime.awrap(db.query("DELETE FROM prm.\"PrItem\"\n                WHERE \"PR_NO\" = ".concat(req.body.params.dataPR.HEADER.PR_NO, ";").concat(stringValue, ";")));
+          return regeneratorRuntime.awrap(db.query("DELETE FROM prm.\"PrItem\"\n                WHERE \"PR_NO\" = ".concat(req.body.params.dataPR.HEADER.PR_NO, ";")));
 
         case 17:
+          _context.next = 19;
+          return regeneratorRuntime.awrap(db.query("".concat(stringValue)));
+
+        case 19:
           return _context.abrupt("return", res.status(200).json({
             message: 'success',
             dataHeader: {
@@ -105,22 +107,22 @@ var saveDraft = function saveDraft(req, res) {
             }
           }));
 
-        case 20:
+        case 22:
           return _context.abrupt("return", res.status(200).json({
             message: 'Cập nhật thất bại!'
           }));
 
-        case 21:
-          _context.next = 36;
+        case 23:
+          _context.next = 39;
           break;
 
-        case 23:
+        case 25:
           //insert
-          _dataItem = req.body.params.dataPR.ITEM;
-          _leng = _dataItem.length;
+          _dataItem2 = req.body.params.dataPR.ITEM;
+          _leng = _dataItem2.length;
 
           if (!(_leng === 0)) {
-            _context.next = 27;
+            _context.next = 29;
             break;
           }
 
@@ -128,20 +130,20 @@ var saveDraft = function saveDraft(req, res) {
             message: 'Yêu cầu có item!'
           }));
 
-        case 27:
-          _query = "INSERT INTO prm.\"PrTable\" (\"PR_TYPE\",\"BUKRS\", \"WAERS\",\"HWAERS\",\"DESCRIPTION\",\"createBy\",\"changeBy\")\n            VALUES ('".concat(req.body.params.dataPR.HEADER.PR_TYPE, "',\n                '").concat(req.body.params.dataPR.HEADER.BUKRS, "',\n                '").concat(req.body.params.dataPR.HEADER.WAERS, "',\n                '").concat(req.body.params.dataPR.HEADER.HWAERS, "',\n                '").concat(req.body.params.dataPR.HEADER.DESCRIPTION, "',\n                '").concat(userId, "','").concat(userId, "')\n                RETURNING \"PR_NO\",\"changeAt\";");
-          _context.next = 30;
-          return regeneratorRuntime.awrap(db.query(_query));
+        case 29:
+          query = "INSERT INTO prm.\"PrTable\" (\"PR_TYPE\",\"BUKRS\", \"WAERS\",\"HWAERS\",\"DESCRIPTION\",\"createBy\",\"changeBy\")\n            VALUES ('".concat(req.body.params.dataPR.HEADER.PR_TYPE, "',\n                '").concat(req.body.params.dataPR.HEADER.BUKRS, "',\n                '").concat(req.body.params.dataPR.HEADER.WAERS, "',\n                '").concat(req.body.params.dataPR.HEADER.HWAERS, "',\n                '").concat(req.body.params.dataPR.HEADER.DESCRIPTION, "',\n                '").concat(userId, "','").concat(userId, "')\n                RETURNING \"PR_NO\",\"changeAt\";");
+          _context.next = 32;
+          return regeneratorRuntime.awrap(db.query(query));
 
-        case 30:
+        case 32:
           id = _context.sent;
           // const dataItem = req.body.params.dataPR.ITEM;
-          stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_NO\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n                \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n                \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\") VALUES"; // const leng = dataItem.length
+          stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_ITEM\",\"PR_NO\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n                \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n                \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\",\"INFNR\") VALUES"; // const leng = dataItem.length
 
-          for (_i in _dataItem) {
-            _dataItem[_i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
+          for (_i in _dataItem2) {
+            _dataItem2[_i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
             stringValueChiden = '';
-            stringValueChiden = "('".concat(id.rows[0].PR_NO, "','").concat(_dataItem[_i].KNTTP, "','").concat(_dataItem[_i].PSTYP, "','").concat(_dataItem[_i].MATNR, "','").concat(_dataItem[_i].MATKL, "','").concat(_dataItem[_i].TXZ01, "'\n                        ,'").concat(_dataItem[_i].WERKS, "','").concat(_dataItem[_i].LGORT, "','").concat(_dataItem[_i].LFDAT, "','").concat(_dataItem[_i].LIFNR, "','").concat(_dataItem[_i].MENGE, "','").concat(_dataItem[_i].MEINS, "','").concat(_dataItem[_i].PREIS, "'\n                        ,'").concat(_dataItem[_i].WEARS, "','").concat(_dataItem[_i].PEINH, "','").concat(_dataItem[_i].GSWRT, "','").concat(_dataItem[_i].LOCAL_AMOUNT, "','").concat(_dataItem[_i].EBELN, "','").concat(_dataItem[_i].EBELP, "','").concat(_dataItem[_i].LOEKZ, "'\n                        ,'").concat(_dataItem[_i].EKORG, "','").concat(_dataItem[_i].EKGRP, "','").concat(_dataItem[_i].WEPOS, "','").concat(_dataItem[_i].WEUNB, "','").concat(_dataItem[_i].BLCKD, "','").concat(_dataItem[_i].REPOS, "','").concat(_dataItem[_i].BLCKT, "'\n                        ,'").concat(_dataItem[_i].SAKTO, "','").concat(_dataItem[_i].KOSTL, "','").concat(_dataItem[_i].PRCTR, "','").concat(_dataItem[_i].ANLN1, "','").concat(_dataItem[_i].ANLN2, "','").concat(_dataItem[_i].AUFNR, "','").concat(_dataItem[_i].GSBER, "'\n                        ,'").concat(_dataItem[_i].KOKRS, "','").concat(_dataItem[_i].GEBER, "','").concat(_dataItem[_i].FIPOS, "','").concat(_dataItem[_i].FKBER, "','").concat(_dataItem[_i].FISTL, "')");
+            stringValueChiden = "('".concat(_dataItem2[_i].PR_ITEM, "','").concat(id.rows[0].PR_NO, "','").concat(_dataItem2[_i].KNTTP, "','").concat(_dataItem2[_i].PSTYP, "','").concat(_dataItem2[_i].MATNR, "','").concat(_dataItem2[_i].MATKL, "','").concat(_dataItem2[_i].TXZ01, "'\n                        ,'").concat(_dataItem2[_i].WERKS, "','").concat(_dataItem2[_i].LGORT, "','").concat(_dataItem2[_i].LFDAT, "','").concat(_dataItem2[_i].LIFNR, "','").concat(_dataItem2[_i].MENGE, "','").concat(_dataItem2[_i].MEINS, "','").concat(_dataItem2[_i].PREIS, "'\n                        ,'").concat(_dataItem2[_i].WEARS, "','").concat(_dataItem2[_i].PEINH, "','").concat(_dataItem2[_i].GSWRT, "','").concat(_dataItem2[_i].LOCAL_AMOUNT, "','").concat(_dataItem2[_i].EBELN, "','").concat(_dataItem2[_i].EBELP, "','").concat(_dataItem2[_i].LOEKZ, "'\n                        ,'").concat(_dataItem2[_i].EKORG, "','").concat(_dataItem2[_i].EKGRP, "','").concat(_dataItem2[_i].WEPOS, "','").concat(_dataItem2[_i].WEUNB, "','").concat(_dataItem2[_i].BLCKD, "','").concat(_dataItem2[_i].REPOS, "','").concat(_dataItem2[_i].BLCKT, "'\n                        ,'").concat(_dataItem2[_i].SAKTO, "','").concat(_dataItem2[_i].KOSTL, "','").concat(_dataItem2[_i].PRCTR, "','").concat(_dataItem2[_i].ANLN1, "','").concat(_dataItem2[_i].ANLN2, "','").concat(_dataItem2[_i].AUFNR, "','").concat(_dataItem2[_i].GSBER, "'\n                        ,'").concat(_dataItem2[_i].KOKRS, "','").concat(_dataItem2[_i].GEBER, "','").concat(_dataItem2[_i].FIPOS, "','").concat(_dataItem2[_i].FKBER, "','").concat(_dataItem2[_i].FISTL, "','").concat(_dataItem2[_i].INFNR, "')");
 
             if (_leng > Number(_i) + 1) {
               stringValueChiden += ',';
@@ -152,10 +154,11 @@ var saveDraft = function saveDraft(req, res) {
           // WHERE "PR_NO" = ${req.body.params.dataPR.HEADER.PR_NO};`);
 
 
-          _context.next = 35;
-          return regeneratorRuntime.awrap(db.query("".concat(stringValue, ";")));
+          _context.next = 37;
+          return regeneratorRuntime.awrap(db.query("".concat(stringValue, " RETURNING \"id\";")));
 
-        case 35:
+        case 37:
+          updateTableItem = _context.sent;
           return _context.abrupt("return", res.status(200).json({
             message: 'success',
             dataHeader: {
@@ -170,23 +173,42 @@ var saveDraft = function saveDraft(req, res) {
             }
           }));
 
-        case 36:
-          _context.next = 41;
+        case 39:
+          _context.next = 49;
           break;
 
-        case 38:
-          _context.prev = 38;
+        case 41:
+          _context.prev = 41;
           _context.t0 = _context["catch"](0);
+          stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_NO\",\"PR_ITEM\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n        \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n        \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\",\"INFNR\") VALUES";
+          _leng2 = dataItem.length;
+
+          for (_i2 in dataItem) {
+            dataItem[_i2]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
+            stringValueChiden = '';
+            stringValueChiden = "('".concat(dataItem[_i2].PR_NO, "','").concat(dataItem[_i2].PR_ITEM, "','").concat(dataItem[_i2].KNTTP, "','").concat(dataItem[_i2].PSTYP, "','").concat(dataItem[_i2].MATNR, "','").concat(dataItem[_i2].MATKL, "','").concat(dataItem[_i2].TXZ01, "'\n                ,'").concat(dataItem[_i2].WERKS, "','").concat(dataItem[_i2].LGORT, "','").concat(dataItem[_i2].LFDAT, "','").concat(dataItem[_i2].LIFNR, "','").concat(dataItem[_i2].MENGE, "','").concat(dataItem[_i2].MEINS, "','").concat(dataItem[_i2].PREIS, "'\n                ,'").concat(dataItem[_i2].WEARS, "','").concat(dataItem[_i2].PEINH, "','").concat(dataItem[_i2].GSWRT, "','").concat(dataItem[_i2].LOCAL_AMOUNT, "','").concat(dataItem[_i2].EBELN, "','").concat(dataItem[_i2].EBELP, "','").concat(dataItem[_i2].LOEKZ, "'\n                ,'").concat(dataItem[_i2].EKORG, "','").concat(dataItem[_i2].EKGRP, "','").concat(dataItem[_i2].WEPOS, "','").concat(dataItem[_i2].WEUNB, "','").concat(dataItem[_i2].BLCKD, "','").concat(dataItem[_i2].REPOS, "','").concat(dataItem[_i2].BLCKT, "'\n                ,'").concat(dataItem[_i2].SAKTO, "','").concat(dataItem[_i2].KOSTL, "','").concat(dataItem[_i2].PRCTR, "','").concat(dataItem[_i2].ANLN1, "','").concat(dataItem[_i2].ANLN2, "','").concat(dataItem[_i2].AUFNR, "','").concat(dataItem[_i2].GSBER, "'\n                ,'").concat(dataItem[_i2].KOKRS, "','").concat(dataItem[_i2].GEBER, "','").concat(dataItem[_i2].FIPOS, "','").concat(dataItem[_i2].FKBER, "','").concat(dataItem[_i2].FISTL, "','").concat(dataItem[_i2].INFNR, "')");
+
+            if (_leng2 > Number(_i2) + 1) {
+              stringValueChiden += ',';
+            }
+
+            stringValue += stringValueChiden;
+          }
+
+          _context.next = 48;
+          return regeneratorRuntime.awrap(db.query("".concat(stringValue, ";")));
+
+        case 48:
           return _context.abrupt("return", res.status(404).json({
             message: err.message
           }));
 
-        case 41:
+        case 49:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[0, 38]]);
+  }, null, null, [[0, 41]]);
 };
 
 module.exports = {

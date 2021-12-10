@@ -19,7 +19,7 @@ let postReleaseCondition = async (req, res) => {
         try {
             const token = req.headers.authorization.split(' ')[1];
             const basicAuth = Buffer.from(token, 'base64').toString('ascii');
-            userId = basicAuth.split(':')[0];
+            userId = basicAuth.split(':')[0].toUpperCase();
         } catch (error) {
             const accessToken = crypt.decrypt(req.headers.authorization);
             const decodeTk = decodeJWT(accessToken);

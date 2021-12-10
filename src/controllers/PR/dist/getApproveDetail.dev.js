@@ -46,7 +46,7 @@ var getApproveDetail = function getApproveDetail(req, res) {
           try {
             token = req.headers.authorization.split(' ')[1];
             basicAuth = Buffer.from(token, 'base64').toString('ascii');
-            userId = basicAuth.split(':')[0];
+            userId = basicAuth.split(':')[0].toUpperCase();
           } catch (error) {
             accessToken = crypt.decrypt(req.headers.authorization);
             decodeTk = decodeJWT(accessToken);

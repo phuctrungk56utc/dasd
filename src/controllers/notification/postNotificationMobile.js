@@ -11,7 +11,7 @@ const decodeJWT = require('jwt-decode');
  * @param {*} req 
  * @param {*} res 
  */
-let getNotification = async (req, res) => {
+let postNotificationMobile = async (req, res) => {
 
 	try {
 		var userId = '';
@@ -24,8 +24,15 @@ let getNotification = async (req, res) => {
 			const decodeTk = decodeJWT(accessToken);
 			userId = decodeTk.userId.toUpperCase();
 		}
-			query = `SELECT * FROM prm."Notification" 
-		WHERE "forUserId" = '${userId}'  ORDER BY "createAt" DESC;`
+        
+		const query = `INSERT INTO prm."NotificationMobileKey" ("userId","Token")  
+		select 
+		unnest(array['${userId}']::character varying[]) as "userId",
+		unnest(array['${req.body.params.token}']::text[]) as "Token"
+		ON CONFLICT ("Token") DO UPDATE 
+		  SET 
+		  "Token" = EXCLUDED."Token",
+			"userId" = EXCLUDED."userId";`
 		//WHERE "forUserId" = '${req.query.userId}' and "StatusCode" != 'X' ORDER BY "changeAt" DESC;`
 		db.query(query, (err, resp) => {
 			if (err) {
@@ -35,10 +42,10 @@ let getNotification = async (req, res) => {
 			}
 		})
 	} catch (error) {
-
+		return res.status(404).json({ message: error.message });
 	}
 
 }
 module.exports = {
-	getNotification: getNotification,
+	postNotificationMobile: postNotificationMobile,
 }

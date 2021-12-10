@@ -51,7 +51,7 @@ var isPrData = function isPrData(req, res, next) {
           checkAuthoRole = false;
           checkRun = false;
 
-          if (!(req.originalUrl.split('?')[0] !== '/getNotification' && req.originalUrl.split('?')[0] !== '/updateStatus')) {
+          if (!(req.originalUrl.split('?')[0] !== '/getNotification' && req.originalUrl.split('?')[0] !== '/updateStatus' && req.originalUrl.split('?')[0] !== '/getUserInfo' && req.originalUrl.split('?')[0] !== '/postNotificationMobile' && req.originalUrl.split('?')[0] !== '/postUserInfo' && req.originalUrl.split('?')[0] !== '/changePass')) {
             _context.next = 30;
             break;
           }

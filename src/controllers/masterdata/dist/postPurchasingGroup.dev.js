@@ -16,9 +16,9 @@ var db = require("../../db/db");
  */
 
 
-var Plant = function Plant(req, res) {
+var postPurchasingGroup = function postPurchasingGroup(req, res) {
   var token, basicAuth, valueCode, valueName, valueLvorm, valueTime, valueUsers, value, query;
-  return regeneratorRuntime.async(function Plant$(_context) {
+  return regeneratorRuntime.async(function postPurchasingGroup$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
@@ -33,21 +33,14 @@ var Plant = function Plant(req, res) {
           valueUsers = [];
 
           for (value in req.body) {
-            valueCode.push(req.body[value].werks);
-            valueName.push(req.body[value].name1);
-
-            if (req.body[value].lvorm) {
-              valueLvorm.push(req.body[value].lvorm);
-            } else {
-              valueLvorm.push('');
-            } // valueLvorm.push(req.body[value].lvorm);
-
-
+            valueCode.push(req.body[value].ekgrp);
+            valueName.push(req.body[value].eknam);
+            valueLvorm.push(req.body[value].lvorm);
             valueTime.push('now()');
             valueUsers.push(basicAuth.split(':')[0].toUpperCase());
           }
 
-          query = "INSERT INTO prm.\"Plant\" (werks, name1, lvorm,\"createdAt\",\"changeAt\",\"createBy\",\"changeBy\") \n    select  \n    unnest($1::character varying[]) as werks,\n    unnest($2::text[]) as name1,\n    unnest($3::char[]) as lvorm,\n    unnest($4::timestamp[]) as \"createdAt\",\n    unnest($5::timestamp[]) as \"changeAt\",\n    unnest($6::character varying[]) as \"createBy\",\n    unnest($7::character varying[]) as \"changeBy\"\n    ON CONFLICT (werks) DO UPDATE \n      SET name1 = EXCLUDED.name1,\n        lvorm = EXCLUDED.lvorm,\n        \"changeAt\"=EXCLUDED.\"changeAt\",\n        \"createBy\"=EXCLUDED.\"createBy\";";
+          query = "INSERT INTO prm.\"PurchasingGroup\" (ekgrp, eknam, lvorm,\"createdAt\",\"changeAt\",\"createBy\",\"changeBy\") \n    select  \n    unnest($1::character varying[]) as ekgrp,\n    unnest($2::text[]) as eknam,\n    unnest($3::char[]) as lvorm,\n    unnest($4::timestamp[]) as \"createdAt\",\n    unnest($5::timestamp[]) as \"changeAt\",\n    unnest($6::character varying[]) as \"createBy\",\n    unnest($7::character varying[]) as \"changeBy\"\n    ON CONFLICT (ekgrp) DO UPDATE \n      SET eknam = EXCLUDED.eknam,\n        lvorm = EXCLUDED.lvorm,\n        \"changeAt\"=EXCLUDED.\"changeAt\",\n        \"createBy\"=EXCLUDED.\"createBy\";";
           db.query(query, [valueCode, valueName, valueLvorm, valueTime, valueTime, valueUsers, valueUsers], function (err, resp) {
             if (err) {
               return res.status(404).json({
@@ -78,5 +71,5 @@ var Plant = function Plant(req, res) {
 };
 
 module.exports = {
-  Plant: Plant
+  postPurchasingGroup: postPurchasingGroup
 };
