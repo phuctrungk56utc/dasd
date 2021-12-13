@@ -12,9 +12,8 @@ var router = express.Router();
 
 var AuthMiddleWare = require("../middleware/AuthMiddleware");
 
-var AuthController = require("../controllers/AuthController");
+var AuthController = require("../controllers/AuthController"); // const FriendController = require("../controllers/FriendController");
 
-var FriendController = require("../controllers/FriendController");
 
 var AuthLoginMiddleware = require("../middleware/AuthLoginMiddleware");
 

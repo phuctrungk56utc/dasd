@@ -29,14 +29,14 @@ let isPrData = async (req, res, next) => {
             const decodeTk = decodeJWT(accessToken);
             userId = decodeTk.userId;
         }
-        
+
         var checkRole = null
         var roleApi = null
         var checkAuthoRole = false;
         var checkRun = false
         if (req.originalUrl.split('?')[0] !== '/getNotification' && req.originalUrl.split('?')[0] !== '/updateStatus'
-        && req.originalUrl.split('?')[0] !== '/getUserInfo' && req.originalUrl.split('?')[0] !== '/postNotificationMobile'
-        && req.originalUrl.split('?')[0] !== '/postUserInfo' && req.originalUrl.split('?')[0] !== '/changePass') {
+            && req.originalUrl.split('?')[0] !== '/getUserInfo' && req.originalUrl.split('?')[0] !== '/postNotificationMobile'
+            && req.originalUrl.split('?')[0] !== '/postUserInfo' && req.originalUrl.split('?')[0] !== '/changePass') {
             checkRun = true;
 
             checkRole = await db.query(`select t2."RoleType",t2."View",t2."Create/Edit/Delete",t2."Approve",t2."All" from prm."userRole" t1 inner join
@@ -44,15 +44,18 @@ let isPrData = async (req, res, next) => {
             roleApi = await db.query(`SELECT * FROM prm."roleApi" where "api"='${req.originalUrl.split('?')[0]}'`);
             try {
                 for (let index in checkRole.rows) {
-                    if (checkRole.rows[index].RoleType === 'All' ||
-                        (checkRole.rows[index].All === true && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType) ||
+                    if (checkRole.rows[index].RoleType === 'All') {
+                        checkAuthoRole = true;
+                        break
+                    }
+                    if ((checkRole.rows[index].All === true && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType) ||
                         (eval(`checkRole.rows[index]['${roleApi.rows[0].action}']`) === true && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType)) {
                         checkAuthoRole = true;
                         break
                     }
                 }
             } catch (error) {
-                return res.status(403).json({ message: 'File do not exits' });
+                return res.status(403).json({ message: 'Authentication error' });
                 // next();
             }
 

@@ -52,7 +52,7 @@ var isPrData = function isPrData(req, res, next) {
           checkRun = false;
 
           if (!(req.originalUrl.split('?')[0] !== '/getNotification' && req.originalUrl.split('?')[0] !== '/updateStatus' && req.originalUrl.split('?')[0] !== '/getUserInfo' && req.originalUrl.split('?')[0] !== '/postNotificationMobile' && req.originalUrl.split('?')[0] !== '/postUserInfo' && req.originalUrl.split('?')[0] !== '/changePass')) {
-            _context.next = 30;
+            _context.next = 33;
             break;
           }
 
@@ -72,48 +72,57 @@ var isPrData = function isPrData(req, res, next) {
 
         case 18:
           if ((_context.t1 = _context.t0()).done) {
-            _context.next = 25;
+            _context.next = 28;
             break;
           }
 
           index = _context.t1.value;
 
-          if (!(checkRole.rows[index].RoleType === 'All' || checkRole.rows[index].All === true && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType || eval("checkRole.rows[index]['".concat(roleApi.rows[0].action, "']")) === true && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType)) {
+          if (!(checkRole.rows[index].RoleType === 'All')) {
             _context.next = 23;
             break;
           }
 
           checkAuthoRole = true;
-          return _context.abrupt("break", 25);
+          return _context.abrupt("break", 28);
 
         case 23:
+          if (!(checkRole.rows[index].All === true && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType || eval("checkRole.rows[index]['".concat(roleApi.rows[0].action, "']")) === true && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType)) {
+            _context.next = 26;
+            break;
+          }
+
+          checkAuthoRole = true;
+          return _context.abrupt("break", 28);
+
+        case 26:
           _context.next = 18;
           break;
 
-        case 25:
-          _context.next = 30;
+        case 28:
+          _context.next = 33;
           break;
 
-        case 27:
-          _context.prev = 27;
+        case 30:
+          _context.prev = 30;
           _context.t2 = _context["catch"](16);
           return _context.abrupt("return", res.status(403).json({
-            message: 'File do not exits'
+            message: 'Authentication error'
           }));
 
-        case 30:
+        case 33:
           if (!(checkAuthoRole && checkRun || !checkRun)) {
-            _context.next = 45;
+            _context.next = 48;
             break;
           }
 
           if (!req.headers.authorization.split(' ')[1]) {
-            _context.next = 42;
+            _context.next = 45;
             break;
           }
 
           _basicAuth = Buffer.from(token, 'base64').toString('ascii');
-          _context.prev = 33;
+          _context.prev = 36;
           db.query("SELECT * FROM prm.users users WHERE \"users\".\"userId\" = '".concat(_basicAuth.split(':')[0].toUpperCase(), "'"), function (err, resp) {
             if (err) {
               return res.status(500).json({
@@ -130,21 +139,21 @@ var isPrData = function isPrData(req, res, next) {
               }
             }
           });
-          _context.next = 40;
+          _context.next = 43;
           break;
 
-        case 37:
-          _context.prev = 37;
-          _context.t3 = _context["catch"](33);
+        case 40:
+          _context.prev = 40;
+          _context.t3 = _context["catch"](36);
           return _context.abrupt("return", res.status(403).json({
             message: 'Authentication error'
           }));
 
-        case 40:
-          _context.next = 43;
+        case 43:
+          _context.next = 46;
           break;
 
-        case 42:
+        case 45:
           try {
             _accessToken = crypt.decrypt(token);
             jwt.verify(_accessToken, accessTokenSecretAccess, function (error, decoded) {
@@ -158,32 +167,32 @@ var isPrData = function isPrData(req, res, next) {
             next(); // return res.status(500).json({ error });
           }
 
-        case 43:
-          _context.next = 46;
+        case 46:
+          _context.next = 49;
           break;
 
-        case 45:
+        case 48:
           return _context.abrupt("return", res.status(403).json({
             message: 'You are not authorized to perform this action'
           }));
 
-        case 46:
-          _context.next = 51;
+        case 49:
+          _context.next = 54;
           break;
 
-        case 48:
-          _context.prev = 48;
+        case 51:
+          _context.prev = 51;
           _context.t4 = _context["catch"](0);
           return _context.abrupt("return", res.status(403).json({
             message: 'Authentication error'
           }));
 
-        case 51:
+        case 54:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[0, 48], [16, 27], [33, 37]]);
+  }, null, null, [[0, 51], [16, 30], [36, 40]]);
 };
 
 module.exports = {
