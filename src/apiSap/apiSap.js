@@ -9,8 +9,8 @@ let apiSap = (url, params,method) => {
         try {
             // let api = await db.query(`select api from prm."API" WHERE "api_key"='getPrice'`);
             // if (api.rows.length > 0) {
-                var username = 'giangph';
-                var password = '1234567';
+                var username = 'quynhbc';
+                var password = 'C0ngquynh96';
 
                 const options = {
                     method: `${method}`,

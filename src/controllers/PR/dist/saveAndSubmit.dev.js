@@ -24,7 +24,7 @@ var updateTable = require("./component/updateTablePrAndRelease");
 
 
 var saveAndSubmit = function saveAndSubmit(req, res) {
-  var dataItem, userId, token, basicAuth, accessToken, decodeTk, leng, bukrs, waers, hwaers, query, update, dataCallSap, index, cd, conDition, _index, ob, data, checkError, _index2, rs, stringValue, _leng, i, stringValueChiden, _leng2, _i, _leng3, _i2, _leng4, _i3, _leng5, _query, id, _index3, _conDition, _index4, _ob, _index5, _leng6, _i4, _leng7, _i5, _leng8, _i6, _leng9, _i7, _leng10, _i8;
+  var dataItem, userId, token, basicAuth, accessToken, decodeTk, leng, bukrs, waers, hwaers, query, update, dataCallSap, index, cd, conDition, _index, ob, data, checkError, _index2, rs, stringValue, _leng, i, stringValueChiden, _leng2, _i, _leng3, _i2, _leng4, _i3, _leng5, _query, id, _index3, _conDition, _index4, _ob, _index5, _leng6, _i4, _leng7, _i5, _leng8, _i6, _leng9, _i7;
 
   return regeneratorRuntime.async(function saveAndSubmit$(_context) {
     while (1) {
@@ -37,7 +37,7 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
           try {
             token = req.headers.authorization.split(' ')[1];
             basicAuth = Buffer.from(token, 'base64').toString('ascii');
-            userId = basicAuth.split(':')[0].toUpperCase();
+            userId = basicAuth.split(':')[0];
           } catch (error) {
             accessToken = crypt.decrypt(req.headers.authorization);
             decodeTk = decodeJWT(accessToken);
@@ -45,7 +45,7 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
           }
 
           if (!(req.body.params.dataPR.HEADER.PR_NO !== '' && req.body.params.dataPR.HEADER.PR_NO !== 0)) {
-            _context.next = 88;
+            _context.next = 92;
             break;
           }
 
@@ -89,7 +89,7 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
           update = _context.sent;
 
           if (!(update.rowCount > 0)) {
-            _context.next = 85;
+            _context.next = 89;
             break;
           }
 
@@ -125,55 +125,60 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
         case 30:
           data = _context.sent;
 
+          if (!(data.response.status === 200)) {
+            _context.next = 86;
+            break;
+          }
+
           if (!(data.data.length > 0)) {
-            _context.next = 77;
+            _context.next = 78;
             break;
           }
 
           checkError = false;
           _context.t0 = regeneratorRuntime.keys(data.data);
 
-        case 34:
+        case 35:
           if ((_context.t1 = _context.t0()).done) {
-            _context.next = 41;
+            _context.next = 42;
             break;
           }
 
           _index2 = _context.t1.value;
 
           if (!(data.data[_index2].HEADER.TYPE === 'E')) {
-            _context.next = 39;
+            _context.next = 40;
             break;
           }
 
           checkError = true;
-          return _context.abrupt("break", 41);
+          return _context.abrupt("break", 42);
 
-        case 39:
-          _context.next = 34;
+        case 40:
+          _context.next = 35;
           break;
 
-        case 41:
+        case 42:
           if (checkError) {
-            _context.next = 66;
+            _context.next = 67;
             break;
           }
 
-          _context.next = 44;
+          _context.next = 45;
           return regeneratorRuntime.awrap(updateTable.updateTablePrAndRelease(data.data[0], req, dataCallSap, userId));
 
-        case 44:
+        case 45:
           rs = _context.sent;
 
           if (!(rs.code && rs.code === 200)) {
-            _context.next = 56;
+            _context.next = 57;
             break;
           }
 
-          _context.next = 48;
+          _context.next = 49;
           return regeneratorRuntime.awrap(db.query("DELETE FROM prm.\"PrItem\"\n                                WHERE \"PR_NO\" = ".concat(req.body.params.dataPR.HEADER.PR_NO, ";")));
 
-        case 48:
+        case 49:
           // dataItem = rs.ITEM[0];
           stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_NO\",\"PR_ITEM\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n                            \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n                            \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\",\"INFNR\") VALUES";
           _leng = dataItem.length;
@@ -190,19 +195,19 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
             stringValue += stringValueChiden;
           }
 
-          _context.next = 53;
+          _context.next = 54;
           return regeneratorRuntime.awrap(db.query("".concat(stringValue, ";")));
 
-        case 53:
+        case 54:
           return _context.abrupt("return", res.status(200).json({
             data: data.data[0]
           }));
 
-        case 56:
-          _context.next = 58;
+        case 57:
+          _context.next = 59;
           return regeneratorRuntime.awrap(db.query("DELETE FROM prm.\"PrItem\"\n                                WHERE \"PR_NO\" = ".concat(req.body.params.dataPR.HEADER.PR_NO, ";")));
 
-        case 58:
+        case 59:
           stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_NO\",\"PR_ITEM\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n                                \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n                                \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\",\"INFNR\") VALUES";
           _leng2 = dataItem.length;
 
@@ -218,24 +223,24 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
             stringValue += stringValueChiden;
           }
 
-          _context.next = 63;
+          _context.next = 64;
           return regeneratorRuntime.awrap(db.query("".concat(stringValue, ";")));
 
-        case 63:
+        case 64:
           return _context.abrupt("return", res.status(201).json({
             data: rs.data,
             message: rs.message
           }));
 
-        case 64:
-          _context.next = 75;
+        case 65:
+          _context.next = 76;
           break;
 
-        case 66:
-          _context.next = 68;
+        case 67:
+          _context.next = 69;
           return regeneratorRuntime.awrap(db.query("DELETE FROM prm.\"PrItem\"\n                            WHERE \"PR_NO\" = ".concat(req.body.params.dataPR.HEADER.PR_NO, ";")));
 
-        case 68:
+        case 69:
           stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_NO\",\"PR_ITEM\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n                            \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n                            \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\",\"INFNR\") VALUES";
           _leng3 = dataItem.length;
 
@@ -251,21 +256,21 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
             stringValue += stringValueChiden;
           }
 
-          _context.next = 73;
+          _context.next = 74;
           return regeneratorRuntime.awrap(db.query("".concat(stringValue, ";")));
 
-        case 73:
+        case 74:
           req.body.params.dataPR.HEADER.changeAt = update.rows[0].changeAt;
           return _context.abrupt("return", res.status(404).json({
             data: data.data,
             dataHeader: req.body.params.dataPR.HEADER
           }));
 
-        case 75:
-          _context.next = 83;
+        case 76:
+          _context.next = 84;
           break;
 
-        case 77:
+        case 78:
           stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_NO\",\"PR_ITEM\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n                    \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n                    \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\",\"INFNR\") VALUES";
           _leng4 = dataItem.length;
 
@@ -281,36 +286,46 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
             stringValue += stringValueChiden;
           }
 
-          _context.next = 82;
+          _context.next = 83;
           return regeneratorRuntime.awrap(db.query("".concat(stringValue, ";")));
 
-        case 82:
+        case 83:
           return _context.abrupt("return", res.status(200).json({
             data: data.data,
             message: 'Tạo thất bại!'
           }));
 
-        case 83:
-          _context.next = 86;
+        case 84:
+          _context.next = 87;
           break;
 
-        case 85:
+        case 86:
+          return _context.abrupt("return", res.status(404).json({
+            data: data.data,
+            message: "".concat(data.response.statusText)
+          }));
+
+        case 87:
+          _context.next = 90;
+          break;
+
+        case 89:
           return _context.abrupt("return", res.status(404).json({
             data: data.data,
             message: 'Cập nhật thất bại!,Kiểm tra số PR'
           }));
 
-        case 86:
-          _context.next = 163;
+        case 90:
+          _context.next = 167;
           break;
 
-        case 88:
+        case 92:
           //insert
           dataItem = req.body.params.dataPR.ITEM;
           _leng5 = dataItem.length;
 
           if (!(_leng5 === 0)) {
-            _context.next = 92;
+            _context.next = 96;
             break;
           }
 
@@ -318,7 +333,7 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
             message: 'Yêu cầu có item!'
           }));
 
-        case 92:
+        case 96:
           bukrs = '';
 
           if (req.body.params.dataPR.HEADER.BUKRS !== undefined) {
@@ -338,10 +353,10 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
           }
 
           _query = "INSERT INTO prm.\"PrTable\" (\"PR_TYPE\",\"BUKRS\", \"WAERS\",\"HWAERS\",\"DESCRIPTION\",\"createBy\",\"changeBy\")\n            VALUES ('".concat(req.body.params.dataPR.HEADER.PR_TYPE, "',\n                '").concat(bukrs, "',\n                '").concat(waers, "',\n                '").concat(hwaers, "',\n                '").concat(req.body.params.dataPR.HEADER.DESCRIPTION, "',\n                '").concat(userId, "','").concat(userId, "')\n                RETURNING \"PR_NO\",\"changeAt\";");
-          _context.next = 101;
+          _context.next = 105;
           return regeneratorRuntime.awrap(db.query(_query));
 
-        case 101:
+        case 105:
           id = _context.sent;
           // var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
           //     "MENGE","MEINS","PREIS","WEARS","PEINH","GSWRT","LOCAL_AMOUNT","EBELN","EBELP","LOEKZ","EKORG","EKGRP","WEPOS","WEUNB",
@@ -371,10 +386,10 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
 
 
           cd = [];
-          _context.next = 107;
+          _context.next = 111;
           return regeneratorRuntime.awrap(db.query("select \"columnName\" from prm.\"ModuleReleaseConditionType\" WHERE \"tableName\" = 'PR';"));
 
-        case 107:
+        case 111:
           _conDition = _context.sent;
 
           for (_index4 in _conDition.rows) {
@@ -387,61 +402,61 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
           dataCallSap.HEADER.PR_NO = id.rows[0].PR_NO; // let api = await db.query(`select api from prm."API"`);
           // if (api.rows.length > 0) {
 
-          _context.next = 113;
+          _context.next = 117;
           return regeneratorRuntime.awrap(apiSap.apiSap(process.env.CIBER_PRM_API_SAP, dataCallSap, 'POST'));
 
-        case 113:
+        case 117:
           data = _context.sent;
 
           if (!(data.data.length > 0)) {
-            _context.next = 157;
+            _context.next = 161;
             break;
           }
 
           checkError = false;
           _context.t2 = regeneratorRuntime.keys(data.data);
 
-        case 117:
+        case 121:
           if ((_context.t3 = _context.t2()).done) {
-            _context.next = 124;
+            _context.next = 128;
             break;
           }
 
           _index5 = _context.t3.value;
 
           if (!(data.data[_index5].HEADER.TYPE === 'E')) {
-            _context.next = 122;
+            _context.next = 126;
             break;
           }
 
           checkError = true;
-          return _context.abrupt("break", 124);
+          return _context.abrupt("break", 128);
 
-        case 122:
-          _context.next = 117;
+        case 126:
+          _context.next = 121;
           break;
 
-        case 124:
+        case 128:
           if (checkError) {
-            _context.next = 149;
-            break;
-          }
-
-          _context.next = 127;
-          return regeneratorRuntime.awrap(updateTable.updateTablePrAndRelease(data.data[0], req, dataCallSap, userId));
-
-        case 127:
-          rs = _context.sent;
-
-          if (!(rs.code === 200)) {
-            _context.next = 139;
+            _context.next = 153;
             break;
           }
 
           _context.next = 131;
-          return regeneratorRuntime.awrap(db.query("DELETE FROM prm.\"PrItem\"\n                            WHERE \"PR_NO\" = ".concat(req.body.params.dataPR.HEADER.PR_NO, ";")));
+          return regeneratorRuntime.awrap(updateTable.updateTablePrAndRelease(data.data[0], req, dataCallSap, userId));
 
         case 131:
+          rs = _context.sent;
+
+          if (!(rs.code === 200)) {
+            _context.next = 143;
+            break;
+          }
+
+          _context.next = 135;
+          return regeneratorRuntime.awrap(db.query("DELETE FROM prm.\"PrItem\"\n                            WHERE \"PR_NO\" = ".concat(req.body.params.dataPR.HEADER.PR_NO, ";")));
+
+        case 135:
           // dataItem = rs.ITEM[0];
           stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_NO\",\"PR_ITEM\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n                        \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n                        \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\",\"INFNR\") VALUES";
           _leng6 = dataItem.length;
@@ -458,19 +473,19 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
             stringValue += stringValueChiden;
           }
 
-          _context.next = 136;
+          _context.next = 140;
           return regeneratorRuntime.awrap(db.query("".concat(stringValue, ";")));
 
-        case 136:
+        case 140:
           return _context.abrupt("return", res.status(200).json({
             data: data.data[0]
           }));
 
-        case 139:
-          _context.next = 141;
+        case 143:
+          _context.next = 145;
           return regeneratorRuntime.awrap(db.query("DELETE FROM prm.\"PrItem\"\n                            WHERE \"PR_NO\" = ".concat(req.body.params.dataPR.HEADER.PR_NO, ";")));
 
-        case 141:
+        case 145:
           stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_NO\",\"PR_ITEM\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n                            \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n                            \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\",\"INFNR\") VALUES";
           _leng7 = dataItem.length;
 
@@ -486,20 +501,20 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
             stringValue += stringValueChiden;
           }
 
-          _context.next = 146;
+          _context.next = 150;
           return regeneratorRuntime.awrap(db.query("".concat(stringValue, ";")));
 
-        case 146:
+        case 150:
           return _context.abrupt("return", res.status(201).json({
             data: rs.data,
             message: rs.message
           }));
 
-        case 147:
-          _context.next = 155;
+        case 151:
+          _context.next = 159;
           break;
 
-        case 149:
+        case 153:
           stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_NO\",\"PR_ITEM\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n                        \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n                        \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\",\"INFNR\") VALUES";
           _leng8 = dataItem.length;
 
@@ -515,10 +530,10 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
             stringValue += stringValueChiden;
           }
 
-          _context.next = 154;
+          _context.next = 158;
           return regeneratorRuntime.awrap(db.query("".concat(stringValue, ";")));
 
-        case 154:
+        case 158:
           return _context.abrupt("return", res.status(404).json({
             data: data.data,
             dataHeader: {
@@ -533,11 +548,11 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
             }
           }));
 
-        case 155:
-          _context.next = 163;
+        case 159:
+          _context.next = 167;
           break;
 
-        case 157:
+        case 161:
           stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_NO\",\"PR_ITEM\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n                \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n                \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\",\"INFNR\") VALUES";
           _leng9 = dataItem.length;
 
@@ -553,51 +568,32 @@ var saveAndSubmit = function saveAndSubmit(req, res) {
             stringValue += stringValueChiden;
           }
 
-          _context.next = 162;
+          _context.next = 166;
           return regeneratorRuntime.awrap(db.query("".concat(stringValue, ";")));
 
-        case 162:
+        case 166:
           return _context.abrupt("return", res.status(200).json({
             data: data.data,
             message: 'Tạo thất bại!'
           }));
 
-        case 163:
-          _context.next = 173;
+        case 167:
+          _context.next = 172;
           break;
 
-        case 165:
-          _context.prev = 165;
+        case 169:
+          _context.prev = 169;
           _context.t4 = _context["catch"](1);
-          stringValue = "INSERT INTO prm.\"PrItem\" (\"PR_NO\",\"PR_ITEM\",\"KNTTP\",\"PSTYP\", \"MATNR\",\"MATKL\",\"TXZ01\",\"WERKS\",\"LGORT\",\"LFDAT\",\"LIFNR\",\n        \"MENGE\",\"MEINS\",\"PREIS\",\"WEARS\",\"PEINH\",\"GSWRT\",\"LOCAL_AMOUNT\",\"EBELN\",\"EBELP\",\"LOEKZ\",\"EKORG\",\"EKGRP\",\"WEPOS\",\"WEUNB\",\n        \"BLCKD\",\"REPOS\",\"BLCKT\",\"SAKTO\",\"KOSTL\",\"PRCTR\",\"ANLN1\",\"ANLN2\",\"AUFNR\",\"GSBER\",\"KOKRS\",\"GEBER\",\"FIPOS\",\"FKBER\",\"FISTL\",\"INFNR\") VALUES";
-          _leng10 = dataItem.length;
-
-          for (_i8 in dataItem) {
-            dataItem[_i8]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
-            stringValueChiden = '';
-            stringValueChiden = "('".concat(dataItem[_i8].PR_NO, "','").concat(dataItem[_i8].PR_ITEM, "','").concat(dataItem[_i8].KNTTP, "','").concat(dataItem[_i8].PSTYP, "','").concat(dataItem[_i8].MATNR, "','").concat(dataItem[_i8].MATKL, "','").concat(dataItem[_i8].TXZ01, "'\n                ,'").concat(dataItem[_i8].WERKS, "','").concat(dataItem[_i8].LGORT, "','").concat(dataItem[_i8].LFDAT, "','").concat(dataItem[_i8].LIFNR, "','").concat(dataItem[_i8].MENGE, "','").concat(dataItem[_i8].MEINS, "','").concat(dataItem[_i8].PREIS, "'\n                ,'").concat(dataItem[_i8].WEARS, "','").concat(dataItem[_i8].PEINH, "','").concat(dataItem[_i8].GSWRT, "','").concat(dataItem[_i8].LOCAL_AMOUNT, "','").concat(dataItem[_i8].EBELN, "','").concat(dataItem[_i8].EBELP, "','").concat(dataItem[_i8].LOEKZ, "'\n                ,'").concat(dataItem[_i8].EKORG, "','").concat(dataItem[_i8].EKGRP, "','").concat(dataItem[_i8].WEPOS, "','").concat(dataItem[_i8].WEUNB, "','").concat(dataItem[_i8].BLCKD, "','").concat(dataItem[_i8].REPOS, "','").concat(dataItem[_i8].BLCKT, "'\n                ,'").concat(dataItem[_i8].SAKTO, "','").concat(dataItem[_i8].KOSTL, "','").concat(dataItem[_i8].PRCTR, "','").concat(dataItem[_i8].ANLN1, "','").concat(dataItem[_i8].ANLN2, "','").concat(dataItem[_i8].AUFNR, "','").concat(dataItem[_i8].GSBER, "'\n                ,'").concat(dataItem[_i8].KOKRS, "','").concat(dataItem[_i8].GEBER, "','").concat(dataItem[_i8].FIPOS, "','").concat(dataItem[_i8].FKBER, "','").concat(dataItem[_i8].FISTL, "','").concat(dataItem[_i8].INFNR, "')");
-
-            if (_leng10 > Number(_i8) + 1) {
-              stringValueChiden += ',';
-            }
-
-            stringValue += stringValueChiden;
-          }
-
-          _context.next = 172;
-          return regeneratorRuntime.awrap(db.query("".concat(stringValue, ";")));
-
-        case 172:
           return _context.abrupt("return", res.status(404).json({
             message: _context.t4.message
           }));
 
-        case 173:
+        case 172:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[1, 165]]);
+  }, null, null, [[1, 169]]);
 };
 
 module.exports = {
