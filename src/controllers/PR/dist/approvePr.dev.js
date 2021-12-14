@@ -114,7 +114,7 @@ var approvePr = function approvePr(req, res) {
 
           sizeQuery = Object.size(req.query);
           sizeBody = Object.size(req.body);
-          PR_NO_VALUE = req.body.params ? req.body.params.PR_NO : req.body.PR_NO;
+          PR_NO_VALUE = req.body.params ? req.body.params.data.PR_NO : req.body.PR_NO; // console.log(req.body.params)
 
           if (sizeQuery > 0 || sizeBody > 0) {
             query = "SELECT * FROM prm.\"PR_RELEASE_STRATEGY\" \n        WHERE \"".concat(Object.keys(req.query)[0], "\"=").concat(String(req.query[Object.keys(req.query)[0]]), ";");
@@ -159,7 +159,7 @@ var approvePr = function approvePr(req, res) {
           //for table PR
           checkAuthorValue = false;
           _context.next = 24;
-          return regeneratorRuntime.awrap(db.query("UPDATE prm.\"PrTable\"\n\t\t\t\tSET \"STATUS\"=3, \"StatusDescription\"='In process'\n\t\t\t\tWHERE \"PR_NO\"='".concat(PR_NO_VALUE, "';")));
+          return regeneratorRuntime.awrap(db.query("UPDATE prm.\"PrTable\"\n\t\t\t\tSET \"STATUS\"=3, \"StatusDescription\"='In process', \"Note\"='".concat(req.body.params.data.Note === null ? '' : req.body.params.data.Note, "'\n\t\t\t\tWHERE \"PR_NO\"='").concat(PR_NO_VALUE, "';")));
 
         case 24:
           _context.next = 26;

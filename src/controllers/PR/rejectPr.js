@@ -32,7 +32,7 @@ let rejectPr = async (req, res) => {
 		// var credentials = btoa(username + ':' + password);
 		// var basicAuth = 'Basic ' + credentials;
 
-		var getPrSapSelect = await db.query(`select "PR_SAP","changeBy" from prm."PrTable" WHERE "PR_NO" = ${req.body.params.PR_NO}`);
+		var getPrSapSelect = await db.query(`select "PR_SAP","changeBy" from prm."PrTable" WHERE "PR_NO" = ${req.body.params.data.PR_NO}`);
 		var PrSapRsData = {
 			"PR_SAP": getPrSapSelect.rows[0].PR_SAP,
 			"REL_CODE": "T1",
@@ -60,12 +60,12 @@ let rejectPr = async (req, res) => {
 			//update status
 			//for table PR
 			await db.query(`UPDATE prm."PrTable"
-			SET "STATUS"=4, "StatusDescription"='Reject'
-			WHERE "PR_NO"='${req.body.params.PR_NO}';`);
+			SET "STATUS"=4, "StatusDescription"='Reject' , "Note"='${req.body.params.data.Note === null ? '' : req.body.params.data.Note}'
+			WHERE "PR_NO"='${req.body.params.data.PR_NO}';`);
 			// for table STRATEGY
 			await db.query(`UPDATE prm."PR_RELEASE_STRATEGY"
 			SET "ACTION_CODE"=2, "ACTION_DESCRIPTION"='Reject', "changeAt"='now()'
-			WHERE "PR_NO"=${req.body.params.PR_NO} AND "userId"='${userId.toUpperCase()}';`);
+			WHERE "PR_NO"=${req.body.params.data.PR_NO} AND "userId"='${userId.toUpperCase()}';`);
 			//Update table HISTORY
 			// await db.query(``);
 			//push notification
@@ -82,7 +82,7 @@ let rejectPr = async (req, res) => {
 							FromUserId: userId,
 							NotiType: 4,
 							NotiTypeDescription: 'Reject your PR',
-							PR_NO: req.body.params.PR_NO,
+							PR_NO: req.body.params.data.PR_NO,
 							StatusCode: '',
 							StatusDescription: 'pending'
 						});
@@ -100,8 +100,8 @@ let rejectPr = async (req, res) => {
 						const data = {
 							"registration_ids": [`${dataPushNotificationMobile.rows[n].Token}`],
 							"notification": {
-								"body": `${userId}: Reject your PR - ${req.body.params.PR_NO}`,
-								"PR_NO": req.body.params.PR_NO,
+								"body": `${userId}: Reject your PR - ${req.body.params.data.PR_NO}`,
+								"PR_NO": req.body.params.data.PR_NO,
 								"OrganizationId": "2",
 								"content_available": true,
 								"priority": "high",
@@ -113,7 +113,7 @@ let rejectPr = async (req, res) => {
 								"priority": "high",
 								"sound": "app_sound.wav",
 								"content_available": true,
-								"bodyText": req.body.params.PR_NO,
+								"bodyText": req.body.params.data.PR_NO,
 								"organization": "Elementary school"
 							}
 						};
@@ -135,7 +135,7 @@ let rejectPr = async (req, res) => {
 				//insert to table notification
 				await db.query(`INSERT INTO prm."Notification"(
 				"forUserId","FromUserId","PR_NO", "StatusCode", "StatusDescription", "createAt", "changeAt", "NotiTypeDescription", "NotiType")
-				VALUES ('${getPrSapSelect.rows[0].changeBy.toUpperCase()}','${userId}',${req.body.params.PR_NO}, '', 'pending', 'now()', 'now()', 'Reject your PR', 4);`);
+				VALUES ('${getPrSapSelect.rows[0].changeBy.toUpperCase()}','${userId}',${req.body.params.data.PR_NO}, '', 'pending', 'now()', 'now()', 'Reject your PR', 4);`);
 
 			} catch (error) {
 				console.log(error)

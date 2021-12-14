@@ -26,7 +26,7 @@ let postUserInfo = async (req, res) => {
     unnest(array['${userId}']::character varying[]) as "userId",
     unnest(array['${req.body.params.userName}']::text[]) as "userName",
     unnest(array['${req.body.params.PositionCode}']::character varying[]) as "PositionCode",
-    unnest(array['${req.body.params.phone}']::integer[]) as phone,
+    unnest(array[${req.body.params.phone}]::integer[]) as phone,
     unnest(array['${req.body.params.CCCD}']::character varying[]) as "CCCD",
     unnest(array['${req.body.params.sex}']::character varying[]) as sex,
     unnest(array['${req.body.params.email}']::character varying[]) as email,

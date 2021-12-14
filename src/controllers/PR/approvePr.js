@@ -99,7 +99,8 @@ let approvePr = async (req, res) => {
 		// Get the size of an object
 		var sizeQuery = Object.size(req.query);
 		var sizeBody = Object.size(req.body);
-		const PR_NO_VALUE = req.body.params ? req.body.params.PR_NO : req.body.PR_NO;
+		const PR_NO_VALUE = req.body.params ? req.body.params.data.PR_NO : req.body.PR_NO;
+		// console.log(req.body.params)
 		var query;
 		if (sizeQuery > 0 || sizeBody > 0) {
 			query = `SELECT * FROM prm."PR_RELEASE_STRATEGY" 
@@ -129,7 +130,7 @@ let approvePr = async (req, res) => {
 				//for table PR
 				checkAuthorValue = false;
 				await db.query(`UPDATE prm."PrTable"
-				SET "STATUS"=3, "StatusDescription"='In process'
+				SET "STATUS"=3, "StatusDescription"='In process', "Note"='${req.body.params.data.Note === null ? '' : req.body.params.data.Note}'
 				WHERE "PR_NO"='${PR_NO_VALUE}';`);
 				// for table STRATEGY
 				await db.query(`UPDATE prm."PR_RELEASE_STRATEGY"

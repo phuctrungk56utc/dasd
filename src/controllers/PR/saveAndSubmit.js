@@ -78,7 +78,6 @@ let saveAndSubmit = async (req, res) => {
                 // let api = await db.query(`select api from prm."API"`);
                 // if (api.rows.length > 0) {
                     var data = await apiSap.apiSap(process.env.CIBER_PRM_API_SAP, dataCallSap, 'POST');
-                    if(data.response.status === 200){
                     if (data.data.length > 0) {
                         var checkError = false;
                         for (let index in data.data) {
@@ -197,9 +196,6 @@ let saveAndSubmit = async (req, res) => {
                 // }
                 // return res.status(200).json({ message: 'success' });
                 // console.log('object');
-            }else{
-                return res.status(404).json({data:data.data, message: `${data.response.statusText}` });
-            }
             } else {
                 return res.status(404).json({data:data.data, message: 'Cập nhật thất bại!,Kiểm tra số PR' });
             }
@@ -389,26 +385,26 @@ let saveAndSubmit = async (req, res) => {
         }
 
     } catch (error) {
-        // var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
-        // "MENGE","MEINS","PREIS","WEARS","PEINH","GSWRT","LOCAL_AMOUNT","EBELN","EBELP","LOEKZ","EKORG","EKGRP","WEPOS","WEUNB",
-        // "BLCKD","REPOS","BLCKT","SAKTO","KOSTL","PRCTR","ANLN1","ANLN2","AUFNR","GSBER","KOKRS","GEBER","FIPOS","FKBER","FISTL","INFNR") VALUES`;
-        //     const leng = dataItem.length
-        //     for (let i in dataItem) {
-        //         dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
-        //         var stringValueChiden = '';
-        //         stringValueChiden = `('${dataItem[i].PR_NO}','${dataItem[i].PR_ITEM}','${dataItem[i].KNTTP}','${dataItem[i].PSTYP}','${dataItem[i].MATNR}','${dataItem[i].MATKL}','${dataItem[i].TXZ01}'
-        //         ,'${dataItem[i].WERKS}','${dataItem[i].LGORT}','${dataItem[i].LFDAT}','${dataItem[i].LIFNR}','${dataItem[i].MENGE}','${dataItem[i].MEINS}','${dataItem[i].PREIS}'
-        //         ,'${dataItem[i].WEARS}','${dataItem[i].PEINH}','${dataItem[i].GSWRT}','${dataItem[i].LOCAL_AMOUNT}','${dataItem[i].EBELN}','${dataItem[i].EBELP}','${dataItem[i].LOEKZ}'
-        //         ,'${dataItem[i].EKORG}','${dataItem[i].EKGRP}','${dataItem[i].WEPOS}','${dataItem[i].WEUNB}','${dataItem[i].BLCKD}','${dataItem[i].REPOS}','${dataItem[i].BLCKT}'
-        //         ,'${dataItem[i].SAKTO}','${dataItem[i].KOSTL}','${dataItem[i].PRCTR}','${dataItem[i].ANLN1}','${dataItem[i].ANLN2}','${dataItem[i].AUFNR}','${dataItem[i].GSBER}'
-        //         ,'${dataItem[i].KOKRS}','${dataItem[i].GEBER}','${dataItem[i].FIPOS}','${dataItem[i].FKBER}','${dataItem[i].FISTL}','${dataItem[i].INFNR}')`;
-        //         if (leng > Number(i) + 1) {
-        //             stringValueChiden += ','
-        //         }
+        var stringValue = `INSERT INTO prm."PrItem" ("PR_NO","PR_ITEM","KNTTP","PSTYP", "MATNR","MATKL","TXZ01","WERKS","LGORT","LFDAT","LIFNR",
+        "MENGE","MEINS","PREIS","WEARS","PEINH","GSWRT","LOCAL_AMOUNT","EBELN","EBELP","LOEKZ","EKORG","EKGRP","WEPOS","WEUNB",
+        "BLCKD","REPOS","BLCKT","SAKTO","KOSTL","PRCTR","ANLN1","ANLN2","AUFNR","GSBER","KOKRS","GEBER","FIPOS","FKBER","FISTL","INFNR") VALUES`;
+            const leng = dataItem.length
+            for (let i in dataItem) {
+                dataItem[i]["PR_NO"] = req.body.params.dataPR.HEADER.PR_NO;
+                var stringValueChiden = '';
+                stringValueChiden = `('${dataItem[i].PR_NO}','${dataItem[i].PR_ITEM}','${dataItem[i].KNTTP}','${dataItem[i].PSTYP}','${dataItem[i].MATNR}','${dataItem[i].MATKL}','${dataItem[i].TXZ01}'
+                ,'${dataItem[i].WERKS}','${dataItem[i].LGORT}','${dataItem[i].LFDAT}','${dataItem[i].LIFNR}','${dataItem[i].MENGE}','${dataItem[i].MEINS}','${dataItem[i].PREIS}'
+                ,'${dataItem[i].WEARS}','${dataItem[i].PEINH}','${dataItem[i].GSWRT}','${dataItem[i].LOCAL_AMOUNT}','${dataItem[i].EBELN}','${dataItem[i].EBELP}','${dataItem[i].LOEKZ}'
+                ,'${dataItem[i].EKORG}','${dataItem[i].EKGRP}','${dataItem[i].WEPOS}','${dataItem[i].WEUNB}','${dataItem[i].BLCKD}','${dataItem[i].REPOS}','${dataItem[i].BLCKT}'
+                ,'${dataItem[i].SAKTO}','${dataItem[i].KOSTL}','${dataItem[i].PRCTR}','${dataItem[i].ANLN1}','${dataItem[i].ANLN2}','${dataItem[i].AUFNR}','${dataItem[i].GSBER}'
+                ,'${dataItem[i].KOKRS}','${dataItem[i].GEBER}','${dataItem[i].FIPOS}','${dataItem[i].FKBER}','${dataItem[i].FISTL}','${dataItem[i].INFNR}')`;
+                if (leng > Number(i) + 1) {
+                    stringValueChiden += ','
+                }
 
-        //         stringValue += stringValueChiden;
-        //     }
-        //     await db.query(`${stringValue};`);
+                stringValue += stringValueChiden;
+            }
+            await db.query(`${stringValue};`);
         return res.status(404).json({ message: error.message });
     }
 

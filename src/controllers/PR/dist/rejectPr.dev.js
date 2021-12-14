@@ -51,7 +51,7 @@ var rejectPr = function rejectPr(req, res) {
           // var basicAuth = 'Basic ' + credentials;
 
           _context.next = 8;
-          return regeneratorRuntime.awrap(db.query("select \"PR_SAP\",\"changeBy\" from prm.\"PrTable\" WHERE \"PR_NO\" = ".concat(req.body.params.PR_NO)));
+          return regeneratorRuntime.awrap(db.query("select \"PR_SAP\",\"changeBy\" from prm.\"PrTable\" WHERE \"PR_NO\" = ".concat(req.body.params.data.PR_NO)));
 
         case 8:
           getPrSapSelect = _context.sent;
@@ -89,11 +89,11 @@ var rejectPr = function rejectPr(req, res) {
           }
 
           _context.next = 16;
-          return regeneratorRuntime.awrap(db.query("UPDATE prm.\"PrTable\"\n\t\t\tSET \"STATUS\"=4, \"StatusDescription\"='Reject'\n\t\t\tWHERE \"PR_NO\"='".concat(req.body.params.PR_NO, "';")));
+          return regeneratorRuntime.awrap(db.query("UPDATE prm.\"PrTable\"\n\t\t\tSET \"STATUS\"=4, \"StatusDescription\"='Reject' , \"Note\"='".concat(req.body.params.data.Note === null ? '' : req.body.params.data.Note, "'\n\t\t\tWHERE \"PR_NO\"='").concat(req.body.params.data.PR_NO, "';")));
 
         case 16:
           _context.next = 18;
-          return regeneratorRuntime.awrap(db.query("UPDATE prm.\"PR_RELEASE_STRATEGY\"\n\t\t\tSET \"ACTION_CODE\"=2, \"ACTION_DESCRIPTION\"='Reject', \"changeAt\"='now()'\n\t\t\tWHERE \"PR_NO\"=".concat(req.body.params.PR_NO, " AND \"userId\"='").concat(userId.toUpperCase(), "';")));
+          return regeneratorRuntime.awrap(db.query("UPDATE prm.\"PR_RELEASE_STRATEGY\"\n\t\t\tSET \"ACTION_CODE\"=2, \"ACTION_DESCRIPTION\"='Reject', \"changeAt\"='now()'\n\t\t\tWHERE \"PR_NO\"=".concat(req.body.params.data.PR_NO, " AND \"userId\"='").concat(userId.toUpperCase(), "';")));
 
         case 18:
           _context.next = 20;
@@ -114,7 +114,7 @@ var rejectPr = function rejectPr(req, res) {
                 FromUserId: userId,
                 NotiType: 4,
                 NotiTypeDescription: 'Reject your PR',
-                PR_NO: req.body.params.PR_NO,
+                PR_NO: req.body.params.data.PR_NO,
                 StatusCode: '',
                 StatusDescription: 'pending'
               });
@@ -146,8 +146,8 @@ var rejectPr = function rejectPr(req, res) {
           _data = {
             "registration_ids": ["".concat(dataPushNotificationMobile.rows[n].Token)],
             "notification": {
-              "body": "".concat(userId, ": Reject your PR - ").concat(req.body.params.PR_NO),
-              "PR_NO": req.body.params.PR_NO,
+              "body": "".concat(userId, ": Reject your PR - ").concat(req.body.params.data.PR_NO),
+              "PR_NO": req.body.params.data.PR_NO,
               "OrganizationId": "2",
               "content_available": true,
               "priority": "high",
@@ -159,7 +159,7 @@ var rejectPr = function rejectPr(req, res) {
               "priority": "high",
               "sound": "app_sound.wav",
               "content_available": true,
-              "bodyText": req.body.params.PR_NO,
+              "bodyText": req.body.params.data.PR_NO,
               "organization": "Elementary school"
             }
           };
@@ -177,7 +177,7 @@ var rejectPr = function rejectPr(req, res) {
 
         case 34:
           _context.next = 36;
-          return regeneratorRuntime.awrap(db.query("INSERT INTO prm.\"Notification\"(\n\t\t\t\t\"forUserId\",\"FromUserId\",\"PR_NO\", \"StatusCode\", \"StatusDescription\", \"createAt\", \"changeAt\", \"NotiTypeDescription\", \"NotiType\")\n\t\t\t\tVALUES ('".concat(getPrSapSelect.rows[0].changeBy.toUpperCase(), "','").concat(userId, "',").concat(req.body.params.PR_NO, ", '', 'pending', 'now()', 'now()', 'Reject your PR', 4);")));
+          return regeneratorRuntime.awrap(db.query("INSERT INTO prm.\"Notification\"(\n\t\t\t\t\"forUserId\",\"FromUserId\",\"PR_NO\", \"StatusCode\", \"StatusDescription\", \"createAt\", \"changeAt\", \"NotiTypeDescription\", \"NotiType\")\n\t\t\t\tVALUES ('".concat(getPrSapSelect.rows[0].changeBy.toUpperCase(), "','").concat(userId, "',").concat(req.body.params.data.PR_NO, ", '', 'pending', 'now()', 'now()', 'Reject your PR', 4);")));
 
         case 36:
           _context.next = 41;
