@@ -35,25 +35,39 @@ let PrTablePrApprove = async (req, res) => {
     // await sleep.sleep(1);
     // db.query(`SELECT * FROM prm."PrTable" INNER JOIN prm."PrItem" ON prm."PrTable"."PrNumber" = prm."PrItem"."PrNumber"`, (err, resp) => {
     var query = '';
-    if (req.query.yearQuery !== undefined && req.query.yearQuery !== '') {
-      var now = new Date(`${req.query.yearQuery}`,`${req.query.monthQuery}`,'01');
-      var prevMonthLastDate = new Date(now.getFullYear(), now.getMonth(), 0);
-      var prevMonthFirstDate = new Date(now.getFullYear() - (now.getMonth() > 0 ? 0 : 1), (now.getMonth() - 1 + 12) % 12, 1);
-      
-      var formatDateComponent = function(dateComponent) {
-        return (dateComponent < 10 ? '0' : '') + dateComponent;
-      };
-      
-      var formatDate = function(date) {
-        return formatDateComponent(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + formatDateComponent(date.getDate()));
-      };
-      query = `SELECT * FROM prm."PrTable" pr INNER JOIN prm."PR_RELEASE_STRATEGY" rl ON pr."PR_NO" = rl."PR_NO" WHERE (pr."PR_SAP" <> 0
-      and rl."userId" = '${userId.toUpperCase()}' or rl."userId" = '${userId.toLowerCase()}') and 
-      ( pr."changeAt" BETWEEN '${formatDate(prevMonthFirstDate)} 00:00:00' AND '${formatDate(prevMonthLastDate)} 23:59:59' )
-      and
-      ( rl."changeAt" BETWEEN '${formatDate(prevMonthFirstDate)} 00:00:00' AND '${formatDate(prevMonthLastDate)} 23:59:59' )
-          ORDER BY pr."changeAt" DESC
-          ;`
+
+    var now = new Date(`${req.query.yearQuery}`,`${req.query.monthQuery}`,'01');
+    var prevMonthLastDate = new Date(now.getFullYear(), now.getMonth(), 0);
+    var prevMonthFirstDate = new Date(now.getFullYear() - (now.getMonth() > 0 ? 0 : 1), (now.getMonth() - 1 + 12) % 12, 1);
+    
+    var formatDateComponent = function(dateComponent) {
+      return (dateComponent < 10 ? '0' : '') + dateComponent;
+    };
+    
+    var formatDate = function(date) {
+      return formatDateComponent(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + formatDateComponent(date.getDate()));
+    };
+
+    if(req.query && req.query.type){
+      if(req.query.type === 'All'){
+        query = `SELECT * FROM prm."PrTable" pr INNER JOIN prm."PR_RELEASE_STRATEGY" rl ON pr."PR_NO" = rl."PR_NO" WHERE (pr."PR_SAP" <> 0
+        and rl."userId" = '${userId.toUpperCase()}' or rl."userId" = '${userId.toLowerCase()}') and 
+        ( pr."changeAt" BETWEEN '${formatDate(prevMonthFirstDate)} 00:00:00' AND '${formatDate(prevMonthLastDate)} 23:59:59' )
+        and
+        ( rl."changeAt" BETWEEN '${formatDate(prevMonthFirstDate)} 00:00:00' AND '${formatDate(prevMonthLastDate)} 23:59:59' )
+            ORDER BY pr."changeAt" DESC
+            ;`
+      }else{
+        query = `SELECT * FROM prm."PrTable" pr INNER JOIN prm."PR_RELEASE_STRATEGY" rl ON pr."PR_NO" = rl."PR_NO" WHERE (pr."PR_SAP" <> 0
+        and rl."userId" = '${userId.toUpperCase()}' or rl."userId" = '${userId.toLowerCase()}') and 
+        ( pr."changeAt" BETWEEN '${formatDate(prevMonthFirstDate)} 00:00:00' AND '${formatDate(prevMonthLastDate)} 23:59:59' )
+        and
+        ( rl."changeAt" BETWEEN '${formatDate(prevMonthFirstDate)} 00:00:00' AND '${formatDate(prevMonthLastDate)} 23:59:59' )
+        and ( pr."STATUS"=${Number(req.query.statusCode)} )
+            ORDER BY pr."changeAt" DESC
+        ;`
+      }
+
     } else {
       query = `SELECT * FROM prm."PrTable" pr INNER JOIN prm."PR_RELEASE_STRATEGY" rl ON pr."PR_NO" = rl."PR_NO" WHERE pr."PR_SAP" <> 0
     and rl."userId" = '${userId.toUpperCase()}' or rl."userId" = '${userId.toLowerCase()}'

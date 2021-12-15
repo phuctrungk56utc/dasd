@@ -24,8 +24,36 @@ let getNotification = async (req, res) => {
 			const decodeTk = decodeJWT(accessToken);
 			userId = decodeTk.userId.toUpperCase();
 		}
-			query = `SELECT * FROM prm."Notification" 
-		WHERE "forUserId" = '${userId}'  ORDER BY "createAt" DESC;`
+		var query = '';
+		var now = new Date(`${req.query.yearQuery}`,`${req.query.monthQuery}`,'01');
+		var prevMonthLastDate = new Date(now.getFullYear(), now.getMonth(), 0);
+		var prevMonthFirstDate = new Date(now.getFullYear() - (now.getMonth() > 0 ? 0 : 1), (now.getMonth() - 1 + 12) % 12, 1);
+		
+		var formatDateComponent = function(dateComponent) {
+		  return (dateComponent < 10 ? '0' : '') + dateComponent;
+		};
+		
+		var formatDate = function(date) {
+		  return formatDateComponent(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + formatDateComponent(date.getDate()));
+		};
+
+		if(req.query && req.query.type){
+			if(req.query.type !== 'All'){
+				query = `SELECT * FROM prm."Notification" 
+				WHERE "forUserId" = '${userId}' and "NotiType" = ${req.query.statusCode} and
+				( "changeAt" BETWEEN '${formatDate(prevMonthFirstDate)} 00:00:00' AND '${formatDate(prevMonthLastDate)} 23:59:59' )
+				ORDER BY "createAt" DESC;`
+			}else{
+				query = `SELECT * FROM prm."Notification"
+				WHERE "forUserId" = '${userId}' and
+				( "changeAt" BETWEEN '${formatDate(prevMonthFirstDate)} 00:00:00' AND '${formatDate(prevMonthLastDate)} 23:59:59' )
+				 ORDER BY "createAt" DESC;`
+			}
+		}else{
+			query = `SELECT * FROM prm."Notification"
+			WHERE "forUserId" = '${userId}'
+			 ORDER BY "createAt" DESC;`
+		}
 		//WHERE "forUserId" = '${req.query.userId}' and "StatusCode" != 'X' ORDER BY "changeAt" DESC;`
 		db.query(query, (err, resp) => {
 			if (err) {

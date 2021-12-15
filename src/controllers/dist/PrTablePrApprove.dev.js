@@ -54,21 +54,24 @@ var PrTablePrApprove = function PrTablePrApprove(req, res) {
 
 
           query = '';
+          now = new Date("".concat(req.query.yearQuery), "".concat(req.query.monthQuery), '01');
+          prevMonthLastDate = new Date(now.getFullYear(), now.getMonth(), 0);
+          prevMonthFirstDate = new Date(now.getFullYear() - (now.getMonth() > 0 ? 0 : 1), (now.getMonth() - 1 + 12) % 12, 1);
 
-          if (req.query.yearQuery !== undefined && req.query.yearQuery !== '') {
-            now = new Date("".concat(req.query.yearQuery), "".concat(req.query.monthQuery), '01');
-            prevMonthLastDate = new Date(now.getFullYear(), now.getMonth(), 0);
-            prevMonthFirstDate = new Date(now.getFullYear() - (now.getMonth() > 0 ? 0 : 1), (now.getMonth() - 1 + 12) % 12, 1);
+          formatDateComponent = function formatDateComponent(dateComponent) {
+            return (dateComponent < 10 ? '0' : '') + dateComponent;
+          };
 
-            formatDateComponent = function formatDateComponent(dateComponent) {
-              return (dateComponent < 10 ? '0' : '') + dateComponent;
-            };
+          formatDate = function formatDate(date) {
+            return formatDateComponent(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + formatDateComponent(date.getDate()));
+          };
 
-            formatDate = function formatDate(date) {
-              return formatDateComponent(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + formatDateComponent(date.getDate()));
-            };
-
-            query = "SELECT * FROM prm.\"PrTable\" pr INNER JOIN prm.\"PR_RELEASE_STRATEGY\" rl ON pr.\"PR_NO\" = rl.\"PR_NO\" WHERE (pr.\"PR_SAP\" <> 0\n      and rl.\"userId\" = '".concat(userId.toUpperCase(), "' or rl.\"userId\" = '").concat(userId.toLowerCase(), "') and \n      ( pr.\"changeAt\" BETWEEN '").concat(formatDate(prevMonthFirstDate), " 00:00:00' AND '").concat(formatDate(prevMonthLastDate), " 23:59:59' )\n      and\n      ( rl.\"changeAt\" BETWEEN '").concat(formatDate(prevMonthFirstDate), " 00:00:00' AND '").concat(formatDate(prevMonthLastDate), " 23:59:59' )\n          ORDER BY pr.\"changeAt\" DESC\n          ;");
+          if (req.query && req.query.type) {
+            if (req.query.type === 'All') {
+              query = "SELECT * FROM prm.\"PrTable\" pr INNER JOIN prm.\"PR_RELEASE_STRATEGY\" rl ON pr.\"PR_NO\" = rl.\"PR_NO\" WHERE (pr.\"PR_SAP\" <> 0\n        and rl.\"userId\" = '".concat(userId.toUpperCase(), "' or rl.\"userId\" = '").concat(userId.toLowerCase(), "') and \n        ( pr.\"changeAt\" BETWEEN '").concat(formatDate(prevMonthFirstDate), " 00:00:00' AND '").concat(formatDate(prevMonthLastDate), " 23:59:59' )\n        and\n        ( rl.\"changeAt\" BETWEEN '").concat(formatDate(prevMonthFirstDate), " 00:00:00' AND '").concat(formatDate(prevMonthLastDate), " 23:59:59' )\n            ORDER BY pr.\"changeAt\" DESC\n            ;");
+            } else {
+              query = "SELECT * FROM prm.\"PrTable\" pr INNER JOIN prm.\"PR_RELEASE_STRATEGY\" rl ON pr.\"PR_NO\" = rl.\"PR_NO\" WHERE (pr.\"PR_SAP\" <> 0\n        and rl.\"userId\" = '".concat(userId.toUpperCase(), "' or rl.\"userId\" = '").concat(userId.toLowerCase(), "') and \n        ( pr.\"changeAt\" BETWEEN '").concat(formatDate(prevMonthFirstDate), " 00:00:00' AND '").concat(formatDate(prevMonthLastDate), " 23:59:59' )\n        and\n        ( rl.\"changeAt\" BETWEEN '").concat(formatDate(prevMonthFirstDate), " 00:00:00' AND '").concat(formatDate(prevMonthLastDate), " 23:59:59' )\n        and ( pr.\"STATUS\"=").concat(Number(req.query.statusCode), " )\n            ORDER BY pr.\"changeAt\" DESC\n        ;");
+            }
           } else {
             query = "SELECT * FROM prm.\"PrTable\" pr INNER JOIN prm.\"PR_RELEASE_STRATEGY\" rl ON pr.\"PR_NO\" = rl.\"PR_NO\" WHERE pr.\"PR_SAP\" <> 0\n    and rl.\"userId\" = '".concat(userId.toUpperCase(), "' or rl.\"userId\" = '").concat(userId.toLowerCase(), "'\n        ORDER BY pr.\"changeAt\" DESC\n        ;");
           }
@@ -85,22 +88,22 @@ var PrTablePrApprove = function PrTablePrApprove(req, res) {
               });
             }
           });
-          _context.next = 11;
+          _context.next = 16;
           break;
 
-        case 8:
-          _context.prev = 8;
+        case 13:
+          _context.prev = 13;
           _context.t0 = _context["catch"](0);
           return _context.abrupt("return", res.status(500).json({
             database: _context.t0
           }));
 
-        case 11:
+        case 16:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[0, 8]]);
+  }, null, null, [[0, 13]]);
 };
 
 module.exports = {
