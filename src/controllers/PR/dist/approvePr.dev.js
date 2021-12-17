@@ -403,7 +403,7 @@ var approvePr = function approvePr(req, res) {
           }
 
           _context.next = 95;
-          return regeneratorRuntime.awrap(db.query("UPDATE prm.\"PrTable\"\n\t\t\t\tSET \"STATUS\"=5, \"StatusDescription\"='Complete'\n\t\t\t\tWHERE \"PR_NO\"='".concat(PR_NO_VALUE, "';")));
+          return regeneratorRuntime.awrap(db.query("UPDATE prm.\"PrTable\"\n\t\t\t\tSET \"STATUS\"=5, \"StatusDescription\"='Complete', \"Note\"='".concat(req.body.params.data.Note === null ? '' : req.body.params.data.Note, "'\n\t\t\t\tWHERE \"PR_NO\"='").concat(PR_NO_VALUE, "';")));
 
         case 95:
           _context.next = 97;

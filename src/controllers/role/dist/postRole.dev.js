@@ -64,45 +64,48 @@ var postRole = function postRole(req, res) {
           query = "INSERT INTO prm.\"roles\" (\"RoleID\",\"RoleType\",\"Description\",\"View\",\"Create/Edit/Delete\",\"Approve\",\"All\",\"createAt\",\"changeAt\",\"createBy\",\"changeBy\") \n    VALUES ";
           leng = req.body.params.role.length;
 
-          for (index in req.body.params.role) {
-            stringValueChiden = '';
-            stringValueChiden = "('".concat(req.body.params.role[index].RoleID, "',\n        '").concat(req.body.params.role[index].RoleType, "',\n        '").concat(req.body.params.role[index].Description, "',\n        '").concat(req.body.params.role[index].View === null ? false : req.body.params.role[index].View, "',\n        '").concat(req.body.params.role[index]["Create/Edit/Delete"] === null ? false : req.body.params.role[index]["Create/Edit/Delete"], "',\n        '").concat(req.body.params.role[index].Approve === null ? false : req.body.params.role[index].Approve, "',\n        '").concat(req.body.params.role[index].All === null ? false : req.body.params.role[index].All, "',\n        'now()','now()','").concat(userId, "','").concat(userId, "')");
+          if (leng > 0) {
+            for (index in req.body.params.role) {
+              stringValueChiden = '';
+              stringValueChiden = "('".concat(req.body.params.role[index].RoleID, "',\n        '").concat(req.body.params.role[index].RoleType, "',\n        '").concat(req.body.params.role[index].Description, "',\n        '").concat(req.body.params.role[index].View === null ? false : req.body.params.role[index].View, "',\n        '").concat(req.body.params.role[index]["Create/Edit/Delete"] === null ? false : req.body.params.role[index]["Create/Edit/Delete"], "',\n        '").concat(req.body.params.role[index].Approve === null ? false : req.body.params.role[index].Approve, "',\n        '").concat(req.body.params.role[index].All === null ? false : req.body.params.role[index].All, "',\n        'now()','now()','").concat(userId, "','").concat(userId, "')");
 
-            if (leng > Number(index) + 1) {
-              stringValueChiden += ',';
+              if (leng > Number(index) + 1) {
+                stringValueChiden += ',';
+              }
+
+              query += stringValueChiden;
             }
 
-            query += stringValueChiden;
+            query += ';';
+            db.query(query, function (err, resp) {
+              if (err) {
+                return res.status(404).json({
+                  message: err.message
+                });
+              } else {
+                return res.status(200).json({
+                  message: 'Success'
+                });
+              }
+            });
           }
 
-          query += ';';
-          db.query(query, function (err, resp) {
-            if (err) {
-              return res.status(404).json({
-                message: err.message
-              });
-            } else {
-              return res.status(200).json({
-                message: 'Success'
-              });
-            }
-          });
-          _context.next = 15;
+          _context.next = 13;
           break;
 
-        case 12:
-          _context.prev = 12;
+        case 10:
+          _context.prev = 10;
           _context.t0 = _context["catch"](0);
           return _context.abrupt("return", res.status(500).json({
             message: _context.t0.message
           }));
 
-        case 15:
+        case 13:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[0, 12]]);
+  }, null, null, [[0, 10]]);
 };
 
 module.exports = {

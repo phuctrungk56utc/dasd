@@ -30,38 +30,38 @@ let isPrData = async (req, res, next) => {
             userId = decodeTk.userId;
         }
 
-        var checkRole = null
-        var roleApi = null
-        var checkAuthoRole = false;
-        var checkRun = false
-        if (req.originalUrl.split('?')[0] !== '/getNotification' && req.originalUrl.split('?')[0] !== '/updateStatus'
-            && req.originalUrl.split('?')[0] !== '/getUserInfo' && req.originalUrl.split('?')[0] !== '/postNotificationMobile'
-            && req.originalUrl.split('?')[0] !== '/postUserInfo' && req.originalUrl.split('?')[0] !== '/changePass') {
-            checkRun = true;
+        // var checkRole = null
+        // var roleApi = null
+        // var checkAuthoRole = false;
+        // var checkRun = false
+        // if (req.originalUrl.split('?')[0] !== '/getNotification' && req.originalUrl.split('?')[0] !== '/updateStatus'
+        //     && req.originalUrl.split('?')[0] !== '/getUserInfo' && req.originalUrl.split('?')[0] !== '/postNotificationMobile'
+        //     && req.originalUrl.split('?')[0] !== '/postUserInfo' && req.originalUrl.split('?')[0] !== '/changePass') {
+        //     checkRun = true;
 
-            checkRole = await db.query(`select t2."RoleType",t2."View",t2."Create/Edit/Delete",t2."Approve",t2."All" from prm."userRole" t1 inner join
-        prm."roles" t2 on t1."RoleID" = t2."RoleID" where t1."userId"='${userId}'`);
-            roleApi = await db.query(`SELECT * FROM prm."roleApi" where "api"='${req.originalUrl.split('?')[0]}'`);
-            try {
-                for (let index in checkRole.rows) {
-                    if (checkRole.rows[index].RoleType === 'All') {
-                        checkAuthoRole = true;
-                        break
-                    }
-                    if ((checkRole.rows[index].All === true && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType) ||
-                        (eval(`checkRole.rows[index]['${roleApi.rows[0].action}']`) === true && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType)) {
-                        checkAuthoRole = true;
-                        break
-                    }
-                }
-            } catch (error) {
-                return res.status(403).json({ message: 'Authentication error' });
-                // next();
-            }
+        //     checkRole = await db.query(`select t2."RoleType",t2."View",t2."Create/Edit/Delete",t2."Approve",t2."All" from prm."userRole" t1 inner join
+        // prm."roles" t2 on t1."RoleID" = t2."RoleID" where t1."userId"='${userId}'`);
+        //     roleApi = await db.query(`SELECT * FROM prm."roleApi" where "api"='${req.originalUrl.split('?')[0]}'`);
+        //     try {
+        //         for (let index in checkRole.rows) {
+        //             if (checkRole.rows[index].RoleType === 'All') {
+        //                 checkAuthoRole = true;
+        //                 break
+        //             }
+        //             if ((checkRole.rows[index].All && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType) ||
+        //                 (eval(`checkRole.rows[index]['${roleApi.rows[0].action}']`) === true && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType)) {
+        //                 checkAuthoRole = true;
+        //                 break
+        //             }
+        //         }
+        //     } catch (error) {
+        //         return res.status(403).json({ message: 'Authentication error' });
+        //         // next();
+        //     }
 
-        }
+        // }
         // (checkAuthoRole && checkRun || (!checkRun))
-        if (checkAuthoRole && checkRun || (!checkRun)) {
+        // if (checkAuthoRole && checkRun || (!checkRun)) {
 
             if (req.headers.authorization.split(' ')[1]) {
                 const basicAuth = Buffer.from(token, 'base64').toString('ascii')
@@ -98,9 +98,9 @@ let isPrData = async (req, res, next) => {
                     // return res.status(500).json({ error });
                 }
             }
-        } else {
-            return res.status(403).json({ message: 'You are not authorized to perform this action' });
-        }
+        // } else {
+        //     return res.status(403).json({ message: 'You are not authorized to perform this action' });
+        // }
     } catch (error) {
         // next();
         return res.status(403).json({ message: 'Authentication error' });

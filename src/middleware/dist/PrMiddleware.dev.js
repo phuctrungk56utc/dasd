@@ -27,7 +27,7 @@ var accessTokenSecretAccess = process.env.CIBER_PRM_JWT_ACCESS;
  */
 
 var isPrData = function isPrData(req, res, next) {
-  var token, userId, basicAuth, accessToken, decodeTk, checkRole, roleApi, checkAuthoRole, checkRun, index, _basicAuth, _accessToken;
+  var token, userId, basicAuth, accessToken, decodeTk, _basicAuth, _accessToken;
 
   return regeneratorRuntime.async(function isPrData$(_context) {
     while (1) {
@@ -44,85 +44,45 @@ var isPrData = function isPrData(req, res, next) {
             accessToken = crypt.decrypt(req.headers.authorization);
             decodeTk = decodeJWT(accessToken);
             userId = decodeTk.userId;
-          }
+          } // var checkRole = null
+          // var roleApi = null
+          // var checkAuthoRole = false;
+          // var checkRun = false
+          // if (req.originalUrl.split('?')[0] !== '/getNotification' && req.originalUrl.split('?')[0] !== '/updateStatus'
+          //     && req.originalUrl.split('?')[0] !== '/getUserInfo' && req.originalUrl.split('?')[0] !== '/postNotificationMobile'
+          //     && req.originalUrl.split('?')[0] !== '/postUserInfo' && req.originalUrl.split('?')[0] !== '/changePass') {
+          //     checkRun = true;
+          //     checkRole = await db.query(`select t2."RoleType",t2."View",t2."Create/Edit/Delete",t2."Approve",t2."All" from prm."userRole" t1 inner join
+          // prm."roles" t2 on t1."RoleID" = t2."RoleID" where t1."userId"='${userId}'`);
+          //     roleApi = await db.query(`SELECT * FROM prm."roleApi" where "api"='${req.originalUrl.split('?')[0]}'`);
+          //     try {
+          //         for (let index in checkRole.rows) {
+          //             if (checkRole.rows[index].RoleType === 'All') {
+          //                 checkAuthoRole = true;
+          //                 break
+          //             }
+          //             if ((checkRole.rows[index].All && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType) ||
+          //                 (eval(`checkRole.rows[index]['${roleApi.rows[0].action}']`) === true && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType)) {
+          //                 checkAuthoRole = true;
+          //                 break
+          //             }
+          //         }
+          //     } catch (error) {
+          //         return res.status(403).json({ message: 'Authentication error' });
+          //         // next();
+          //     }
+          // }
+          // (checkAuthoRole && checkRun || (!checkRun))
+          // if (checkAuthoRole && checkRun || (!checkRun)) {
 
-          checkRole = null;
-          roleApi = null;
-          checkAuthoRole = false;
-          checkRun = false;
-
-          if (!(req.originalUrl.split('?')[0] !== '/getNotification' && req.originalUrl.split('?')[0] !== '/updateStatus' && req.originalUrl.split('?')[0] !== '/getUserInfo' && req.originalUrl.split('?')[0] !== '/postNotificationMobile' && req.originalUrl.split('?')[0] !== '/postUserInfo' && req.originalUrl.split('?')[0] !== '/changePass')) {
-            _context.next = 33;
-            break;
-          }
-
-          checkRun = true;
-          _context.next = 12;
-          return regeneratorRuntime.awrap(db.query("select t2.\"RoleType\",t2.\"View\",t2.\"Create/Edit/Delete\",t2.\"Approve\",t2.\"All\" from prm.\"userRole\" t1 inner join\n        prm.\"roles\" t2 on t1.\"RoleID\" = t2.\"RoleID\" where t1.\"userId\"='".concat(userId, "'")));
-
-        case 12:
-          checkRole = _context.sent;
-          _context.next = 15;
-          return regeneratorRuntime.awrap(db.query("SELECT * FROM prm.\"roleApi\" where \"api\"='".concat(req.originalUrl.split('?')[0], "'")));
-
-        case 15:
-          roleApi = _context.sent;
-          _context.prev = 16;
-          _context.t0 = regeneratorRuntime.keys(checkRole.rows);
-
-        case 18:
-          if ((_context.t1 = _context.t0()).done) {
-            _context.next = 28;
-            break;
-          }
-
-          index = _context.t1.value;
-
-          if (!(checkRole.rows[index].RoleType === 'All')) {
-            _context.next = 23;
-            break;
-          }
-
-          checkAuthoRole = true;
-          return _context.abrupt("break", 28);
-
-        case 23:
-          if (!(checkRole.rows[index].All === true && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType || eval("checkRole.rows[index]['".concat(roleApi.rows[0].action, "']")) === true && checkRole.rows[index].RoleType === roleApi.rows[0].RoleType)) {
-            _context.next = 26;
-            break;
-          }
-
-          checkAuthoRole = true;
-          return _context.abrupt("break", 28);
-
-        case 26:
-          _context.next = 18;
-          break;
-
-        case 28:
-          _context.next = 33;
-          break;
-
-        case 30:
-          _context.prev = 30;
-          _context.t2 = _context["catch"](16);
-          return _context.abrupt("return", res.status(403).json({
-            message: 'Authentication error'
-          }));
-
-        case 33:
-          if (!(checkAuthoRole && checkRun || !checkRun)) {
-            _context.next = 48;
-            break;
-          }
 
           if (!req.headers.authorization.split(' ')[1]) {
-            _context.next = 45;
+            _context.next = 15;
             break;
           }
 
           _basicAuth = Buffer.from(token, 'base64').toString('ascii');
-          _context.prev = 36;
+          _context.prev = 6;
           db.query("SELECT * FROM prm.users users WHERE \"users\".\"userId\" = '".concat(_basicAuth.split(':')[0].toUpperCase(), "'"), function (err, resp) {
             if (err) {
               return res.status(500).json({
@@ -139,21 +99,21 @@ var isPrData = function isPrData(req, res, next) {
               }
             }
           });
-          _context.next = 43;
+          _context.next = 13;
           break;
 
-        case 40:
-          _context.prev = 40;
-          _context.t3 = _context["catch"](36);
+        case 10:
+          _context.prev = 10;
+          _context.t0 = _context["catch"](6);
           return _context.abrupt("return", res.status(403).json({
             message: 'Authentication error'
           }));
 
-        case 43:
-          _context.next = 46;
+        case 13:
+          _context.next = 16;
           break;
 
-        case 45:
+        case 15:
           try {
             _accessToken = crypt.decrypt(token);
             jwt.verify(_accessToken, accessTokenSecretAccess, function (error, decoded) {
@@ -167,32 +127,23 @@ var isPrData = function isPrData(req, res, next) {
             next(); // return res.status(500).json({ error });
           }
 
-        case 46:
-          _context.next = 49;
+        case 16:
+          _context.next = 21;
           break;
 
-        case 48:
-          return _context.abrupt("return", res.status(403).json({
-            message: 'You are not authorized to perform this action'
-          }));
-
-        case 49:
-          _context.next = 54;
-          break;
-
-        case 51:
-          _context.prev = 51;
-          _context.t4 = _context["catch"](0);
+        case 18:
+          _context.prev = 18;
+          _context.t1 = _context["catch"](0);
           return _context.abrupt("return", res.status(403).json({
             message: 'Authentication error'
           }));
 
-        case 54:
+        case 21:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[0, 51], [16, 30], [36, 40]]);
+  }, null, null, [[0, 18], [6, 10]]);
 };
 
 module.exports = {

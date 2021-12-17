@@ -74,19 +74,19 @@ var getApproveDetail = function getApproveDetail(req, res) {
           // 		RELEASE_LEVEL = author.rows[index].RELEASE_LEVEL;
           // 	}
           // }
-          checkAuthorValue = false;
+          checkAuthorValue = true;
           _context.t0 = regeneratorRuntime.keys(author.rows);
 
         case 11:
           if ((_context.t1 = _context.t0()).done) {
-            _context.next = 24;
+            _context.next = 26;
             break;
           }
 
           index = _context.t1.value;
 
           if (!(userId === author.rows[index].userId && author.rows[index].ACTION_CODE === 0)) {
-            _context.next = 22;
+            _context.next = 24;
             break;
           }
 
@@ -94,29 +94,37 @@ var getApproveDetail = function getApproveDetail(req, res) {
 
         case 15:
           if ((_context.t3 = _context.t2()).done) {
-            _context.next = 22;
+            _context.next = 24;
             break;
           }
 
           j = _context.t3.value;
 
-          if (!(author.rows[index].RELEASE_LEVEL === 1 && author.rows[index].ACTION_CODE === 0 || author.rows[index].RELEASE_LEVEL > author.rows[j].RELEASE_LEVEL && author.rows[j].ACTION_CODE === 1)) {
-            _context.next = 20;
+          if (!(author.rows[index].userId === author.rows[j].userId)) {
+            _context.next = 19;
             break;
           }
 
-          checkAuthorValue = true;
-          return _context.abrupt("break", 22);
+          return _context.abrupt("continue", 15);
 
-        case 20:
+        case 19:
+          if (!(author.rows[index].RELEASE_LEVEL === 1 && author.rows[index].ACTION_CODE !== 0 || author.rows[index].RELEASE_LEVEL > author.rows[j].RELEASE_LEVEL && author.rows[j].ACTION_CODE !== 1)) {
+            _context.next = 22;
+            break;
+          }
+
+          checkAuthorValue = false;
+          return _context.abrupt("break", 24);
+
+        case 22:
           _context.next = 15;
           break;
 
-        case 22:
+        case 24:
           _context.next = 11;
           break;
 
-        case 24:
+        case 26:
           db.query(query, function (err, resp) {
             if (err) {
               return res.status(404).json({
@@ -129,22 +137,22 @@ var getApproveDetail = function getApproveDetail(req, res) {
               });
             }
           });
-          _context.next = 30;
+          _context.next = 32;
           break;
 
-        case 27:
-          _context.prev = 27;
+        case 29:
+          _context.prev = 29;
           _context.t4 = _context["catch"](0);
           return _context.abrupt("return", res.status(404).json({
             message: _context.t4.message
           }));
 
-        case 30:
+        case 32:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[0, 27]]);
+  }, null, null, [[0, 29]]);
 };
 
 module.exports = {

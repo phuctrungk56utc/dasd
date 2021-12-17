@@ -51,24 +51,19 @@ let getApproveDetail = async (req, res) => {
 		// 		RELEASE_LEVEL = author.rows[index].RELEASE_LEVEL;
 		// 	}
 		// }
-		var checkAuthorValue = false;
+		var checkAuthorValue = true;
 			for (let index in author.rows) {
-				// if (RELEASE_LEVEL === 1 && author.rows[index].ACTION_CODE === 0) {
-				// 	checkAuthorValue = true;
-				// 	break;
-				// }
 				if(userId === author.rows[index].userId && author.rows[index].ACTION_CODE === 0){
 					for (let j in author.rows) {
-						if((author.rows[index].RELEASE_LEVEL === 1 && author.rows[index].ACTION_CODE === 0) || (author.rows[index].RELEASE_LEVEL > author.rows[j].RELEASE_LEVEL && author.rows[j].ACTION_CODE === 1)){
-							checkAuthorValue = true;
+						if(author.rows[index].userId === author.rows[j].userId){
+							continue;
+						}
+						if((author.rows[index].RELEASE_LEVEL === 1 && author.rows[index].ACTION_CODE !== 0) || (author.rows[index].RELEASE_LEVEL > author.rows[j].RELEASE_LEVEL && author.rows[j].ACTION_CODE !== 1)){
+							checkAuthorValue = false;
 							break;
 						}
 					}
 				}
-				// if (author.rows[index].RELEASE_LEVEL < RELEASE_LEVEL && author.rows[index].ACTION_CODE !== 1) {
-				// 	checkAuthorValue = false;
-				// 	break;
-				// }
 			}
 		
 

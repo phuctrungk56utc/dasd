@@ -51,7 +51,7 @@ let getAllMasterData = async (req, res) => {
 		}else{
 			listCompanyString = "['']";
 		}
-		if(Object.keys(req.query)[0] === '"WERKS"' || Object.keys(req.query)[0] === '"BUKRS"'){
+		if(Object.keys(req.query)[0] === '"WERKS"' || ( Object.keys(req.query)[0] === '"BUKRS"' && !( req.query && req.query.query === 'All'))){
 			if (String(req.query[Object.keys(req.query)[0]]) === '*') {
 				query = `SELECT * FROM prm.${Object.keys(req.query)[0]} WHERE "BUKRS" = ANY(ARRAY${listCompanyString});`
 			} else {

@@ -141,10 +141,13 @@ var getUserRole = require("../controllers/role/getUserRole"); //post role
 var postRole = require("../controllers/role/postRole"); //postUserRole
 
 
-var postUserRole = require("../controllers/role/postUserRole"); //
+var postUserRole = require("../controllers/role/postUserRole"); //getUserRoleAuthorization
 
 
-var getUserCompany = require("../controllers/userCompany/getUserCompany"); //
+var getUserRoleAuthorization = require("../controllers/role/getUserRoleAuthorization"); // getUserCompany
+
+
+var getUserCompany = require("../controllers/userCompany/getUserCompany"); //postUserCompany
 
 
 var postUserCompany = require("../controllers/userCompany/postUserCompany"); //get getUserInfo
@@ -249,7 +252,9 @@ var initAPIs = function initAPIs(app) {
 
   router.post("/postRole", postRole.postRole); //postUserRole 
 
-  router.post("/postUserRole", postUserRole.postUserRole); //
+  router.post("/postUserRole", postUserRole.postUserRole); // getUserRoleAuthorization
+
+  router.get("/getUserRoleAuthorization", getUserRoleAuthorization.getUserRoleAuthorization); //
 
   router.get("/getUserCompany", getUserCompany.getUserCompany); //
 

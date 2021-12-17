@@ -291,7 +291,7 @@ let approvePr = async (req, res) => {
 				//update status
 				//for table PR
 				await db.query(`UPDATE prm."PrTable"
-				SET "STATUS"=5, "StatusDescription"='Complete'
+				SET "STATUS"=5, "StatusDescription"='Complete', "Note"='${req.body.params.data.Note === null ? '' : req.body.params.data.Note}'
 				WHERE "PR_NO"='${PR_NO_VALUE}';`);
 				// for table STRATEGY
 				await db.query(`UPDATE prm."PR_RELEASE_STRATEGY"

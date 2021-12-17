@@ -90,9 +90,11 @@ const getUserRole = require("../controllers/role/getUserRole");
 const postRole = require("../controllers/role/postRole");
 //postUserRole
 const postUserRole = require("../controllers/role/postUserRole");
-//
+//getUserRoleAuthorization
+const getUserRoleAuthorization = require("../controllers/role/getUserRoleAuthorization");
+// getUserCompany
 const getUserCompany = require("../controllers/userCompany/getUserCompany");
-//
+//postUserCompany
 const postUserCompany = require("../controllers/userCompany/postUserCompany");
 //get getUserInfo
 const getUserInfo = require("../controllers/userInfo/getUserInfo");
@@ -201,6 +203,8 @@ let initAPIs = (app) => {
   router.post("/postRole", postRole.postRole);
   //postUserRole 
   router.post("/postUserRole", postUserRole.postUserRole);
+  // getUserRoleAuthorization
+  router.get("/getUserRoleAuthorization", getUserRoleAuthorization.getUserRoleAuthorization);
   //
   router.get("/getUserCompany", getUserCompany.getUserCompany);
   //

@@ -9,6 +9,8 @@ const db = require("../../db/db");
  * @param {*} req 
  * @param {*} res 
  */
+
+//for table
 let getUserRole = async (req, res) => {
   try {
     // await sleep.sleep(1);
